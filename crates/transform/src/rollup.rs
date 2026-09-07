@@ -106,7 +106,7 @@ impl TraversalSet {
             .map(|m| sha256(&[b"UNIDPP/ROLLUP/LEAF|", &m.leaf_bytes()]))
             .collect();
         while level.len() > 1 {
-            let mut next = Vec::with_capacity((level.len() + 1) / 2);
+            let mut next = Vec::with_capacity(level.len().div_ceil(2));
             for pair in level.chunks(2) {
                 let (left, right) = match pair {
                     [l, r] => (l, r),
@@ -140,7 +140,7 @@ impl TraversalSet {
                 idx - 1
             };
             proof.push(level[sibling]);
-            let mut next = Vec::with_capacity((level.len() + 1) / 2);
+            let mut next = Vec::with_capacity(level.len().div_ceil(2));
             for pair in level.chunks(2) {
                 let (l, r) = match pair {
                     [l, r] => (l, r),
@@ -179,7 +179,7 @@ impl TraversalSet {
             };
             node = sha256(&[b"UNIDPP/ROLLUP/NODE|", &l.0, &r.0]);
             idx /= 2;
-            size = (size + 1) / 2;
+            size = size.div_ceil(2);
         }
         size == 1 && &node == root
     }

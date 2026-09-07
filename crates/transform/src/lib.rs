@@ -18,6 +18,7 @@ pub mod combine;
 pub mod provenance;
 pub mod quantity;
 pub mod rng;
+pub mod rollup;
 pub mod split;
 pub mod taint;
 
@@ -25,6 +26,9 @@ pub use combine::{combine, CombineOutcome, CombineSpec, InputReference, StampCon
 pub use provenance::ProvenanceGraph;
 pub use quantity::{Dimension, Quantity, Unit, UnitDef, UnitRegistry};
 pub use rng::Rng;
+pub use rollup::{
+    verify_rollup, AggregateValue, RollupAttestation, RollupVerdict, TraversalMember, TraversalSet,
+};
 pub use split::{split, CarveOut, SplitOutcome, SplitSpec};
 pub use taint::{Taint, TaintKind, TaintSet};
 

@@ -56,7 +56,10 @@ impl FromStr for Dimension {
             "count" => Ok(Dimension::Count),
             "dimensionless" => Ok(Dimension::Dimensionless),
             _ => {
-                if let Some(rest) = s.strip_prefix("custom:").or_else(|| s.strip_prefix("CUSTOM:")) {
+                if let Some(rest) = s
+                    .strip_prefix("custom:")
+                    .or_else(|| s.strip_prefix("CUSTOM:"))
+                {
                     if !rest.trim().is_empty() {
                         return Ok(Dimension::Custom(rest.trim().to_string()));
                     }
@@ -81,7 +84,9 @@ impl<'de> serde::Deserialize<'de> for Dimension {
 }
 
 /// A unit: `uom` symbol + registry URI (UnitsML-style).
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
+)]
 pub struct Unit {
     pub uom: String,
     pub registry_uri: String,
@@ -467,9 +472,7 @@ mod tests {
         assert_eq!(b.cmp_qty(&c, &reg).unwrap(), Ordering::Equal);
         let s = Quantity::sum([&a, &b], &reg).unwrap();
         assert_eq!(
-            s.convert_to(&reg.unit("kg").unwrap(), &reg)
-                .unwrap()
-                .amount,
+            s.convert_to(&reg.unit("kg").unwrap(), &reg).unwrap().amount,
             dec("900")
         );
     }

@@ -88,11 +88,7 @@ pub struct EvidentiaryReading {
 }
 
 impl EvidentiaryReading {
-    pub fn evaluate(
-        log: &EventLog,
-        at: Timestamp,
-        coverage: CoverageReport,
-    ) -> EvidentiaryReading {
+    pub fn evaluate(log: &EventLog, at: Timestamp, coverage: CoverageReport) -> EvidentiaryReading {
         let mut corrections = 0;
         let mut recalls = 0;
         let mut security_flags = 0;

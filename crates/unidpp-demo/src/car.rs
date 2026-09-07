@@ -13,8 +13,9 @@
 
 use std::io::Write;
 
-use unidpp_event::{BlindInstallSpec, 
-    verify_parent_binding, EventLog, EventType, EventPayload, InstallTarget, TypedEvent,
+use unidpp_event::{
+    verify_parent_binding, BlindInstallSpec, EventLog, EventPayload, EventType, InstallTarget,
+    TypedEvent,
 };
 use unidpp_model::{
     CapabilityClass, DataPointRef, Decimal, FactValue, FreshnessRequirement, InstallMethod,
@@ -25,7 +26,7 @@ use unidpp_model::{
 use unidpp_tier_a::{EcLevel, TierAPacker, TierAPayload};
 use unidpp_verdict::{Reading, VerdictBuilder};
 
-use crate::{print_verdict, short_hash, salt_for, DemoError, Trace};
+use crate::{print_verdict, salt_for, short_hash, DemoError, Trace};
 
 const BATTERY_PID: &str = "urn:unidpp:passport:battery-pack-bp52-000841";
 const CAR_PID: &str = "urn:iso:std:iso-iec:15459:unidpp:passport:car-wvwzzz1jzxw000841";
@@ -119,7 +120,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          binding profile urn:unidpp:profile:eu-battery-2023-1542",
     )?;
     tr.kv("commitment", &short_hash(&b0).to_string())?;
-    tr.kv("state", "battery-pack-bp52-000841: 0 -> 1 sealed events; status issued")?;
+    tr.kv(
+        "state",
+        "battery-pack-bp52-000841: 0 -> 1 sealed events; status issued",
+    )?;
     tr.note(
         "The battery needs its own carrier precisely because it is \
          independently placed on the market and regulated; children join by \
@@ -151,7 +155,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          binding profile urn:unidpp:profile:eu-vehicle-type-approval",
     )?;
     tr.kv("commitment", &short_hash(&c0).to_string())?;
-    tr.kv("state", "car-wvwzzz1jzxw000841: 0 -> 1 sealed events; status issued")?;
+    tr.kv(
+        "state",
+        "car-wvwzzz1jzxw000841: 0 -> 1 sealed events; status issued",
+    )?;
     tr.note(
         "One passport per placed-on-market product identity; the parent \
          manifest lists the battery as a typed child reference resolvable at \
@@ -197,7 +204,11 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventPayload::Install {
             target: InstallTarget::Blind(b),
         } => b,
-        other => return Err(DemoError::msg(format!("expected blind install, got {other:?}"))),
+        other => {
+            return Err(DemoError::msg(format!(
+                "expected blind install, got {other:?}"
+            )))
+        }
     };
     let proof_ok = verify_parent_binding(&car_id, &install_salt, &blind.commitment);
     tr.kv(
@@ -278,8 +289,14 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventType::MilestoneRecord,
         EventPayload::MilestoneRecord {
             counters: [
-                ("battery.cycle-count".to_string(), "815".parse::<Decimal>().unwrap()),
-                ("battery.soh-percent".to_string(), "91.5".parse::<Decimal>().unwrap()),
+                (
+                    "battery.cycle-count".to_string(),
+                    "815".parse::<Decimal>().unwrap(),
+                ),
+                (
+                    "battery.soh-percent".to_string(),
+                    "91.5".parse::<Decimal>().unwrap(),
+                ),
             ]
             .into_iter()
             .collect(),
@@ -296,7 +313,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          marker self-declared",
     )?;
     tr.kv("commitment", &short_hash(&b2).to_string())?;
-    tr.kv("state", "battery: 2 -> 3 sealed events; counters cycle-count 815, soh 91.5")?;
+    tr.kv(
+        "state",
+        "battery: 2 -> 3 sealed events; counters cycle-count 815, soh 91.5",
+    )?;
     tr.note(
         "The device is a tier of the passport system, not a client: lifecycle \
          events originate on-device, and the union of custodian-held segments \
@@ -308,10 +328,16 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
     let predicate = recall_predicate();
     let holdings = TwinFacts::new()
         .set("battery.firmware", FactValue::Str("2.2.0".into()))
-        .set("battery.cycle-count", FactValue::Num("815".parse().unwrap()));
+        .set(
+            "battery.cycle-count",
+            FactValue::Num("815".parse().unwrap()),
+        );
     let updated = TwinFacts::new()
         .set("battery.firmware", FactValue::Str("2.3.2".into()))
-        .set("battery.cycle-count", FactValue::Num("815".parse().unwrap()));
+        .set(
+            "battery.cycle-count",
+            FactValue::Num("815".parse().unwrap()),
+        );
     let now_recall = ts("2027-06-15T09:00:00Z");
     let e = TypedEvent::new(
         3,
@@ -337,7 +363,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
     tr.kv("commitment", &short_hash(&b3).to_string())?;
     tr.kv(
         "predicate",
-        &format!("published as {}; the recall set is never enumerated centrally", crate::fmt_predicate(&predicate)),
+        &format!(
+            "published as {}; the recall set is never enumerated centrally",
+            crate::fmt_predicate(&predicate)
+        ),
     )?;
     tr.kv(
         "local eval",
@@ -397,9 +426,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         &format!(
             "as-of prefix contains {} events, {} recall; replayed safety flag \
              {}; multi-suite framing degrades explicitly rather than passing",
-            v_now.evidentiary.events_total,
-            v_now.evidentiary.recalls,
-            v_now.current_state.safety,
+            v_now.evidentiary.events_total, v_now.evidentiary.recalls, v_now.current_state.safety,
         ),
     )?;
     tr.note(
@@ -438,7 +465,11 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
             payload.status,
             payload.safety,
             payload.as_of,
-            payload.log_head.as_ref().map(short_hash).unwrap_or_default(),
+            payload
+                .log_head
+                .as_ref()
+                .map(short_hash)
+                .unwrap_or_default(),
         ),
     )?;
     tr.kv(

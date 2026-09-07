@@ -1,6 +1,6 @@
 //! Casing / separator normalization (the UniDPP normalization table).
 //!
-//! The lens-model critique in PLAN.md flags EN 18223 (5.2.2) for legislating
+//! The lens-model critique in the UniDPP design framework flags EN 18223 (5.2.2) for legislating
 //! identifier casing: a 2026-EU deployment accident frozen into normative
 //! text. This core does the opposite: every token (scheme, granularity,
 //! relationship type, recoverability, capability class, ...) accepts any

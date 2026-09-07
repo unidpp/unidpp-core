@@ -62,22 +62,17 @@ mod tests {
     fn triad() {
         let now = Timestamp::from_secs(1_000_000);
         let as_of = Timestamp::from_secs(999_000);
-        let req = FreshnessRequirement::FreshWithin { max_age_secs: 3_600 };
-        assert_eq!(
-            evaluate_freshness(now, Some(as_of), req).label(),
-            "fresh"
-        );
+        let req = FreshnessRequirement::FreshWithin {
+            max_age_secs: 3_600,
+        };
+        assert_eq!(evaluate_freshness(now, Some(as_of), req).label(), "fresh");
         let old = Timestamp::from_secs(900_000);
         assert!(matches!(
             evaluate_freshness(now, Some(old), req),
             FreshnessVerdict::Stale { .. }
         ));
-        assert_eq!(
-            evaluate_freshness(now, None, req).label(),
-            "indeterminate"
-        );
+        assert_eq!(evaluate_freshness(now, None, req).label(), "indeterminate");
         // Static requirement never goes stale.
-        assert!(evaluate_freshness(now, Some(old), FreshnessRequirement::Static)
-            .is_fresh());
+        assert!(evaluate_freshness(now, Some(old), FreshnessRequirement::Static).is_fresh());
     }
 }

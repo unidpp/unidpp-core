@@ -14,7 +14,11 @@ use unidpp_model::{
 struct Rng(u64);
 impl Rng {
     fn new(seed: u64) -> Rng {
-        Rng(if seed == 0 { 0x9E37_79B9_7F4A_7C15 } else { seed })
+        Rng(if seed == 0 {
+            0x9E37_79B9_7F4A_7C15
+        } else {
+            seed
+        })
     }
     fn next_u64(&mut self) -> u64 {
         let mut x = self.0;
@@ -53,10 +57,14 @@ macro_rules! assert_casing_invariant {
     ($ty:ty, $canonical:expr, $rng:expr) => {{
         let canonical = $canonical;
         let mangled = random_casing(&mut $rng, canonical);
-        let parsed: $ty = mangled.parse().unwrap_or_else(|e| {
-            panic!("`{mangled}` must parse as {}: {e}", stringify!($ty))
-        });
-        assert_eq!(parsed.to_string(), canonical, "canonical display must round-trip");
+        let parsed: $ty = mangled
+            .parse()
+            .unwrap_or_else(|e| panic!("`{mangled}` must parse as {}: {e}", stringify!($ty)));
+        assert_eq!(
+            parsed.to_string(),
+            canonical,
+            "canonical display must round-trip"
+        );
     }};
 }
 

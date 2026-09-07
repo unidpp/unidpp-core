@@ -7,8 +7,8 @@
 
 use unidpp_model::{Decimal, PassportId};
 use unidpp_transform::{
-    combine, split, CarveOut, CombineSpec, InputReference, Quantity, Rng, SplitSpec, StampContextRef,
-    UnitRegistry,
+    combine, split, CarveOut, CombineSpec, InputReference, Quantity, Rng, SplitSpec,
+    StampContextRef, UnitRegistry,
 };
 
 fn pid(n: u64) -> PassportId {

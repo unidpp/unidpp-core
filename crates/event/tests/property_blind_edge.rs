@@ -9,8 +9,9 @@
 //!   salts (dictionary attacks gain nothing);
 //! - binding verification succeeds only with the correct pair.
 
-use unidpp_event::{BlindInstallSpec, 
-    parent_commitment, verify_parent_binding, EventLog, EventType, EventPayload, SaltStore, TypedEvent,
+use unidpp_event::{
+    parent_commitment, verify_parent_binding, BlindInstallSpec, EventLog, EventPayload, EventType,
+    SaltStore, TypedEvent,
 };
 use unidpp_model::{
     InstallMethod, Interval, Pairing, PassportId, Recoverability, Timestamp, TrustMarker,
@@ -90,9 +91,7 @@ fn blind_edges_never_leak_parent_or_salt() {
             "salt leaked into log JSON (iteration {i})"
         );
         let log_bytes = serde_json::to_vec(&log).unwrap();
-        assert!(!log_bytes
-            .windows(salt.len())
-            .any(|w| w == salt));
+        assert!(!log_bytes.windows(salt.len()).any(|w| w == salt));
         // 3. The salt store is a separate artifact (and it does hold the
         //    salt — that is exactly why it must never ship with the log).
         let salt_json = serde_json::to_string(&salts).unwrap();
@@ -111,8 +110,11 @@ fn blind_edges_never_leak_parent_or_salt() {
         assert_eq!(c, parent_commitment(&parent, &salt));
         // 6. Binding verification.
         assert!(verify_parent_binding(&parent, &salt, &c));
-        let other_parent = PassportId::new(&format!("urn:unidpp:passport:car-{}", rng.range(0, 1_000_000)))
-            .unwrap();
+        let other_parent = PassportId::new(&format!(
+            "urn:unidpp:passport:car-{}",
+            rng.range(0, 1_000_000)
+        ))
+        .unwrap();
         assert!(!verify_parent_binding(&other_parent, &salt, &c));
         let other_salt = rng.bytes32();
         assert!(!verify_parent_binding(&parent, &other_salt, &c));

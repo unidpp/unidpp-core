@@ -75,7 +75,8 @@ pub fn split(spec: &SplitSpec, registry: &UnitRegistry) -> Result<SplitOutcome, 
         .sub(&total)
         .map_err(TransformError::Model)?;
     // Express the remainder in the parent's own unit (exact conversion).
-    let remainder = Quantity::from_canonical(remainder_canonical, &spec.parent_available.unit, registry)?;
+    let remainder =
+        Quantity::from_canonical(remainder_canonical, &spec.parent_available.unit, registry)?;
     let parent_consumed = remainder.is_zero();
     Ok(SplitOutcome {
         carve_outs: spec.carve_outs.clone(),

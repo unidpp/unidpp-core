@@ -3,7 +3,7 @@
 
 unidpp_model::str_enum! {
     /// Typed event classes. The first fifteen variants (in declaration
-    /// order) are the PLAN.md post-sale taxonomy E1-E15; the rest are the
+    /// order) are the the UniDPP design framework post-sale taxonomy E1-E15; the rest are the
     /// transformation, structural, and edge-visibility classes.
     pub enum EventType {
         // E1-E15 (post-sale taxonomy).
@@ -73,7 +73,10 @@ impl EventType {
     pub fn is_structural(&self) -> bool {
         matches!(
             self,
-            EventType::Install | EventType::Uninstall | EventType::UpgradeInstall | EventType::PartReplace
+            EventType::Install
+                | EventType::Uninstall
+                | EventType::UpgradeInstall
+                | EventType::PartReplace
         )
     }
 
@@ -111,14 +114,23 @@ impl EventType {
 
     pub fn number(&self) -> Option<&'static str> {
         let classes = Self::post_sale_classes();
-        classes
-            .iter()
-            .position(|c| c == self)
-            .map(|i| match i {
-                0 => "E1", 1 => "E2", 2 => "E3", 3 => "E4", 4 => "E5", 5 => "E6",
-                6 => "E7", 7 => "E8", 8 => "E9", 9 => "E10", 10 => "E11", 11 => "E12",
-                12 => "E13", 13 => "E14", _ => "E15",
-            })
+        classes.iter().position(|c| c == self).map(|i| match i {
+            0 => "E1",
+            1 => "E2",
+            2 => "E3",
+            3 => "E4",
+            4 => "E5",
+            5 => "E6",
+            6 => "E7",
+            7 => "E8",
+            8 => "E9",
+            9 => "E10",
+            10 => "E11",
+            11 => "E12",
+            12 => "E13",
+            13 => "E14",
+            _ => "E15",
+        })
     }
 }
 
@@ -152,6 +164,9 @@ mod tests {
             EventType::EndOfWaste
         );
         assert!("nonsense".parse::<EventType>().is_err());
-        assert_eq!(EventType::EdgeVisibilityChange.to_string(), "edge.visibility.change");
+        assert_eq!(
+            EventType::EdgeVisibilityChange.to_string(),
+            "edge.visibility.change"
+        );
     }
 }

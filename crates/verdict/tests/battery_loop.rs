@@ -7,9 +7,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use unidpp_event::{BlindInstallSpec, 
-    EventLog, EventType, EventPayload, Status, TypedEvent,
-};
+use unidpp_event::{BlindInstallSpec, EventLog, EventPayload, EventType, Status, TypedEvent};
 use unidpp_model::{
     CapabilityClass, DataPointRef, Decimal, FactValue, FreshnessRequirement, InstallMethod,
     Interval, Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
@@ -19,8 +17,7 @@ use unidpp_model::{
 use unidpp_tier_a::{TierAPacker, TierAPayload};
 use unidpp_transform::{
     combine, split, taint::KnownTaint, CarveOut, CombineSpec, InputReference, ProvenanceGraph,
-    Quantity,
-    SplitSpec, StampContextRef, Taint, TaintKind, TaintSet, UnitRegistry,
+    Quantity, SplitSpec, StampContextRef, Taint, TaintKind, TaintSet, UnitRegistry,
 };
 use unidpp_verdict::{Degradation, Failure, Outcome, Reading, VerdictBuilder};
 
@@ -117,7 +114,14 @@ fn battery_loop_end_to_end() {
         }],
     };
     let outcome = combine(&spec, &reg).unwrap();
-    assert_eq!(outcome.loss.convert_to(&reg.unit("kg").unwrap(), &reg).unwrap().amount, "0.8".parse::<Decimal>().unwrap());
+    assert_eq!(
+        outcome
+            .loss
+            .convert_to(&reg.unit("kg").unwrap(), &reg)
+            .unwrap()
+            .amount,
+        "0.8".parse::<Decimal>().unwrap()
+    );
 
     // The pack's log: derived issuance carrying the inputReferences.
     let mut pack_log = EventLog::new(pid("pack-1"));
@@ -208,7 +212,10 @@ fn battery_loop_end_to_end() {
     .unwrap();
     pack_log.append(e, Some(install_salt), Some(3)).unwrap();
     let pack_json = serde_json::to_string(&pack_log).unwrap();
-    assert!(!pack_json.contains(car.as_str()), "blind edge leaked the car identity");
+    assert!(
+        !pack_json.contains(car.as_str()),
+        "blind edge leaked the car identity"
+    );
     let salt_hex: String = install_salt.iter().map(|b| format!("{b:02x}")).collect();
     assert!(!pack_json.contains(&salt_hex), "blind edge leaked the salt");
     assert!(pack_log.verify().is_ok());
@@ -228,9 +235,16 @@ fn battery_loop_end_to_end() {
     graph.record_combine(pid("pack-1"), &[pid("cell-a"), pid("cell-b")]);
     graph.record_split(pid("pack-1"), &[pid("mod-1")]);
     let pack_taints = graph.taints_of(&pid("pack-1"), &taint_index);
-    assert!(pack_taints.voids_ab_initio(), "stolen material taints the derived pack");
-    assert!(graph.taints_of(&pid("mod-1"), &taint_index).voids_ab_initio());
-    assert!(!graph.taints_of(&pid("cell-b"), &taint_index).voids_ab_initio());
+    assert!(
+        pack_taints.voids_ab_initio(),
+        "stolen material taints the derived pack"
+    );
+    assert!(graph
+        .taints_of(&pid("mod-1"), &taint_index)
+        .voids_ab_initio());
+    assert!(!graph
+        .taints_of(&pid("cell-b"), &taint_index)
+        .voids_ab_initio());
     let recall_set = graph.recall_set(&pid("cell-a"));
     assert!(recall_set.contains(&pid("pack-1")) && recall_set.contains(&pid("mod-1")));
 
@@ -275,7 +289,10 @@ fn battery_loop_end_to_end() {
         signatures: vec![SigSlot::placeholder(SignatureSuite::MlDsa65, "k-pq")],
         ..payload.clone()
     };
-    assert!(packer.pack(&big).is_err(), "ML-DSA-65 must overflow a v40-M QR budget");
+    assert!(
+        packer.pack(&big).is_err(),
+        "ML-DSA-65 must overflow a v40-M QR budget"
+    );
 
     // --- Verdicts.
     let profile = battery_profile();
@@ -297,12 +314,17 @@ fn battery_loop_end_to_end() {
         .answering(Reading::CurrentState)
         .build();
     // Framing-only signatures degrade explicitly (never silently pass).
-    assert!(matches!(v.outcome, Outcome::Degraded(Degradation::SignaturesFramedOnly)));
+    assert!(matches!(
+        v.outcome,
+        Outcome::Degraded(Degradation::SignaturesFramedOnly)
+    ));
     assert!(v.current_state.voids_ab_initio);
 
     // Freshness: bounded window goes stale.
     let live_profile = ProfileManifest {
-        freshness: FreshnessRequirement::FreshWithin { max_age_secs: 3_600 },
+        freshness: FreshnessRequirement::FreshWithin {
+            max_age_secs: 3_600,
+        },
         ..profile.clone()
     };
     let v_stale = VerdictBuilder::new(&pack_log, t(1_700_510_000))
@@ -310,18 +332,27 @@ fn battery_loop_end_to_end() {
         .with_provided(provided)
         .with_anchor(pack_log.head().unwrap())
         .build();
-    assert!(matches!(v_stale.outcome, Outcome::Degraded(Degradation::StaleData { .. })));
+    assert!(matches!(
+        v_stale.outcome,
+        Outcome::Degraded(Degradation::StaleData { .. })
+    ));
 
     // Offline (no anchor) degrades, broken chain fails.
     let v_offline = VerdictBuilder::new(&pack_log, now_fresh).build();
-    assert!(matches!(v_offline.outcome, Outcome::Degraded(Degradation::OfflineNoAnchor)));
+    assert!(matches!(
+        v_offline.outcome,
+        Outcome::Degraded(Degradation::OfflineNoAnchor)
+    ));
     let mut json = serde_json::to_string(&pack_log).unwrap();
     json = json.replacen("eow-cert-9", "eow-cert-X", 1);
     let tampered: EventLog = serde_json::from_str(&json).unwrap();
     // The EndOfWaste event is unsalted, so its commitment is recomputable
     // and the tampering breaks the chain.
     let v_fail = VerdictBuilder::new(&tampered, now_fresh).build();
-    assert!(matches!(v_fail.outcome, Outcome::Fail(Failure::BrokenChain)));
+    assert!(matches!(
+        v_fail.outcome,
+        Outcome::Fail(Failure::BrokenChain)
+    ));
 
     // Applicability: the profile triggers on capacity (predicate).
     let facts = TwinFacts::new().set(

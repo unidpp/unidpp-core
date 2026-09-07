@@ -17,7 +17,9 @@ use unidpp_model::time::Interval;
 use unidpp_model::{EnumParseError, PassportId, Timestamp};
 
 /// Kind of taint.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
+)]
 #[serde(untagged)]
 pub enum TaintKind {
     Known(KnownTaint),
@@ -55,7 +57,10 @@ impl fmt::Display for TaintKind {
 impl FromStr for TaintKind {
     type Err = EnumParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some(rest) = s.strip_prefix("other:").or_else(|| s.strip_prefix("OTHER:")) {
+        if let Some(rest) = s
+            .strip_prefix("other:")
+            .or_else(|| s.strip_prefix("OTHER:"))
+        {
             if !rest.trim().is_empty() {
                 return Ok(TaintKind::Other(rest.trim().to_string()));
             }
@@ -75,7 +80,9 @@ impl TaintKind {
 }
 
 /// A single taint entry.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub struct Taint {
     pub source: PassportId,
     pub kind: TaintKind,

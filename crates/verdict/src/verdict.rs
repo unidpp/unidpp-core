@@ -202,10 +202,11 @@ impl<'a> VerdictBuilder<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use unidpp_event::{EventType, EventPayload, TypedEvent};
+    use unidpp_event::{EventPayload, EventType, TypedEvent};
     use unidpp_model::{
-        CapabilityClass, DataPointRef, Interval, PassportId, ProfileAxes, ProfileId, ProfileManifest,
-        Resolution, SignatureSuite, TriggerPredicate, Traversal, TrustMarker, VisibilityClass,
+        CapabilityClass, DataPointRef, Interval, PassportId, ProfileAxes, ProfileId,
+        ProfileManifest, Resolution, SignatureSuite, Traversal, TriggerPredicate, TrustMarker,
+        VisibilityClass,
     };
 
     fn pid() -> PassportId {
@@ -240,7 +241,9 @@ mod tests {
             axes: ProfileAxes::jurisdiction("EU"),
             trigger: TriggerPredicate::Any,
             min_capability: CapabilityClass::Silent,
-            freshness: FreshnessRequirement::FreshWithin { max_age_secs: 3_600 },
+            freshness: FreshnessRequirement::FreshWithin {
+                max_age_secs: 3_600,
+            },
             effective: Interval::starting(Timestamp::from_secs(0)),
             data_points: vec![DataPointRef::new("ferin:eu", "a", None).unwrap()],
             crypto_suites: vec![SignatureSuite::EcdsaP256],

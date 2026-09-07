@@ -193,7 +193,9 @@ impl<'de> serde::Deserialize<'de> for Timestamp {
 /// A half-open... closed interval [`from`, `to`] with an optional open end
 /// ("ongoing"): installation intervals, profile effective dates, distrust
 /// windows.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
+)]
 pub struct Interval {
     pub from: Timestamp,
     pub to: Option<Timestamp>,
@@ -210,10 +212,7 @@ impl Interval {
                 "interval end {to} before start {from}"
             )));
         }
-        Ok(Interval {
-            from,
-            to: Some(to),
-        })
+        Ok(Interval { from, to: Some(to) })
     }
 
     pub fn is_open(&self) -> bool {
@@ -311,10 +310,7 @@ mod tests {
         );
         let t = Timestamp::parse("2026-09-07T13:45:09").unwrap();
         assert_eq!(t.to_string(), "2026-09-07T13:45:09Z");
-        assert_eq!(
-            Timestamp::parse("2026-09-07 13:45:09Z").unwrap(),
-            t
-        );
+        assert_eq!(Timestamp::parse("2026-09-07 13:45:09Z").unwrap(), t);
     }
 
     #[test]

@@ -1,6 +1,6 @@
 //! UniDPP transformation algebra (crate `unidpp-transform`).
 //!
-//! PLAN.md, "Semantic exchange, stamps, and the transformation algebra":
+//! the UniDPP design framework, "Semantic exchange, stamps, and the transformation algebra":
 //! - Split (1->N): recorded in the parent's log by its custodian; children
 //!   are new passports with `derivedFrom` + quantity carve-outs;
 //!   sum(children) <= parent (remainder semantics).
@@ -36,14 +36,23 @@ use unidpp_model::{Decimal, ModelError, PassportId};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TransformError {
     UnknownUnit(String),
-    DimensionMismatch { left: String, right: String },
-    OverCarve { requested: Decimal, available: Decimal },
+    DimensionMismatch {
+        left: String,
+        right: String,
+    },
+    OverCarve {
+        requested: Decimal,
+        available: Decimal,
+    },
     OverConsumption {
         input: PassportId,
         requested: Decimal,
         available: Decimal,
     },
-    NegativeBalance { total_in: Decimal, output: Decimal },
+    NegativeBalance {
+        total_in: Decimal,
+        output: Decimal,
+    },
     Empty(String),
     Registry(String),
     Provenance(String),

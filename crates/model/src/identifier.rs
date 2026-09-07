@@ -98,7 +98,9 @@ impl IdScheme {
                     .to_string();
                 Ok(IdScheme::Local(normalization::normalize_token(&tag)))
             }
-            _ => Err(ModelError::Parse(format!("unknown identifier scheme `{s}`"))),
+            _ => Err(ModelError::Parse(format!(
+                "unknown identifier scheme `{s}`"
+            ))),
         }
     }
 
@@ -111,7 +113,11 @@ impl IdScheme {
 
     fn default_granularity(&self) -> Granularity {
         match self {
-            IdScheme::Gtin | IdScheme::Gln | IdScheme::Handle | IdScheme::Doi | IdScheme::Uri
+            IdScheme::Gtin
+            | IdScheme::Gln
+            | IdScheme::Handle
+            | IdScheme::Doi
+            | IdScheme::Uri
             | IdScheme::Local(_) => Granularity::Model,
             _ => Granularity::Item,
         }
@@ -262,9 +268,7 @@ impl ProductIdentifier {
     fn parse_element_string(s: &str) -> Result<ProductIdentifier, ModelError> {
         let parts: Vec<&str> = s.split('+').collect();
         if parts.len() % 2 != 0 {
-            return Err(ModelError::Parse(format!(
-                "malformed element string `{s}`"
-            )));
+            return Err(ModelError::Parse(format!("malformed element string `{s}`")));
         }
         let mut key: Option<String> = None;
         let mut lot: Option<String> = None;

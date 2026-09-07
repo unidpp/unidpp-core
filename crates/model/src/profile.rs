@@ -150,9 +150,7 @@ impl FromStr for FreshnessRequirement {
                 let body = t
                     .strip_prefix("fresh-within:")
                     .or_else(|| t.strip_prefix("FRESH-WITHIN:"))
-                    .ok_or_else(|| {
-                        ModelError::Parse(format!("bad freshness requirement `{t}`"))
-                    })?;
+                    .ok_or_else(|| ModelError::Parse(format!("bad freshness requirement `{t}`")))?;
                 let secs = body
                     .trim_end_matches('s')
                     .parse::<i64>()
@@ -169,7 +167,9 @@ impl FromStr for FreshnessRequirement {
 }
 
 /// A FERIN-registered data point reference: (register, item, version).
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub struct DataPointRef {
     pub register: String,
     pub item: String,
@@ -177,7 +177,11 @@ pub struct DataPointRef {
 }
 
 impl DataPointRef {
-    pub fn new(register: &str, item: &str, version: Option<&str>) -> Result<DataPointRef, ModelError> {
+    pub fn new(
+        register: &str,
+        item: &str,
+        version: Option<&str>,
+    ) -> Result<DataPointRef, ModelError> {
         if register.trim().is_empty() || item.trim().is_empty() {
             return Err(ModelError::Validation(
                 "data point reference needs register and item".into(),
@@ -263,7 +267,9 @@ impl ProfileManifest {
             )));
         }
         if !self.effective.is_open() && self.effective.to.is_none() {
-            return Err(ModelError::Validation("effective interval malformed".into()));
+            return Err(ModelError::Validation(
+                "effective interval malformed".into(),
+            ));
         }
         Ok(())
     }
@@ -286,8 +292,14 @@ mod tests {
             min_capability: CapabilityClass::Silent,
             freshness: FreshnessRequirement::Static,
             effective: Interval::starting(Timestamp::from_secs(1_700_000_000)),
-            data_points: vec![DataPointRef::new("ferin:eu", "carbon-footprint", Some("3.1")).unwrap()],
-            crypto_suites: vec![SignatureSuite::EcdsaP256, SignatureSuite::Sm2, SignatureSuite::MlDsa65],
+            data_points: vec![
+                DataPointRef::new("ferin:eu", "carbon-footprint", Some("3.1")).unwrap(),
+            ],
+            crypto_suites: vec![
+                SignatureSuite::EcdsaP256,
+                SignatureSuite::Sm2,
+                SignatureSuite::MlDsa65,
+            ],
             confidential: false,
             resolution: Resolution::Public,
             edge_visibility: VisibilityClass::Restricted,
@@ -301,7 +313,10 @@ mod tests {
         let p = battery_profile();
         let mut facts = TwinFacts::new();
         assert!(!p.applies_to(&facts, now));
-        facts = facts.set("battery.capacity-kwh", FactValue::Num("2.0".parse().unwrap()));
+        facts = facts.set(
+            "battery.capacity-kwh",
+            FactValue::Num("2.0".parse().unwrap()),
+        );
         assert!(p.applies_to(&facts, now));
         let early = Timestamp::from_secs(1_600_000_000);
         assert!(!p.applies_to(&facts, early));
@@ -310,7 +325,9 @@ mod tests {
     #[test]
     fn unsatisfiable_profile_rejected() {
         let mut p = battery_profile();
-        p.freshness = FreshnessRequirement::FreshWithin { max_age_secs: 3_600 };
+        p.freshness = FreshnessRequirement::FreshWithin {
+            max_age_secs: 3_600,
+        };
         let err = p.validate().unwrap_err();
         assert!(err.to_string().contains("unsatisfiable"));
         p.min_capability = CapabilityClass::LoggedContact;
@@ -343,10 +360,15 @@ mod tests {
     #[test]
     fn freshness_parsing() {
         assert_eq!(
-            "fresh-within:3600s".parse::<FreshnessRequirement>().unwrap(),
+            "fresh-within:3600s"
+                .parse::<FreshnessRequirement>()
+                .unwrap(),
             FreshnessRequirement::FreshWithin { max_age_secs: 3600 }
         );
-        assert_eq!("STATIC".parse::<FreshnessRequirement>().unwrap(), FreshnessRequirement::Static);
+        assert_eq!(
+            "STATIC".parse::<FreshnessRequirement>().unwrap(),
+            FreshnessRequirement::Static
+        );
         assert!("fresh-within:0s".parse::<FreshnessRequirement>().is_err());
         assert_eq!(
             FreshnessRequirement::FreshWithin { max_age_secs: 60 }.to_string(),

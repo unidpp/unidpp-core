@@ -57,8 +57,8 @@ mod tests {
     use super::*;
     use unidpp_model::{
         CapabilityClass, DataPointRef, FreshnessRequirement, Interval, ProfileAxes, ProfileId,
-        ProfileManifest, Resolution, SignatureSuite, TriggerPredicate, Traversal, VisibilityClass,
-        Timestamp,
+        ProfileManifest, Resolution, SignatureSuite, Timestamp, Traversal, TriggerPredicate,
+        VisibilityClass,
     };
 
     fn profile() -> ProfileManifest {

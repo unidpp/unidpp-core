@@ -145,14 +145,26 @@ impl TierAPacker {
         let mut signatures = Vec::new();
         while r.remaining() > 0 {
             match r.read_tag()? {
-                TAG_PRODUCT_ID => product_id = Some(r.read_str()?.parse().map_err(TierAError::Model)?),
+                TAG_PRODUCT_ID => {
+                    product_id = Some(r.read_str()?.parse().map_err(TierAError::Model)?)
+                }
                 TAG_RESOLVER_URI => resolver_uri = Some(r.read_str()?),
                 TAG_PASSPORT_ID => {
-                    passport_id = Some(unidpp_model::PassportId::new(&r.read_str()?).map_err(TierAError::Model)?)
+                    passport_id = Some(
+                        unidpp_model::PassportId::new(&r.read_str()?).map_err(TierAError::Model)?,
+                    )
                 }
                 TAG_EO_ID => eo_id = Some(r.read_str()?),
-                TAG_STATUS => status = Some(r.read_str()?.parse().map_err(|e: unidpp_model::EnumParseError| TierAError::Decode(e.to_string()))?),
-                TAG_SAFETY => safety = Some(r.read_str()?.parse().map_err(|e: unidpp_model::EnumParseError| TierAError::Decode(e.to_string()))?),
+                TAG_STATUS => {
+                    status = Some(r.read_str()?.parse().map_err(
+                        |e: unidpp_model::EnumParseError| TierAError::Decode(e.to_string()),
+                    )?)
+                }
+                TAG_SAFETY => {
+                    safety = Some(r.read_str()?.parse().map_err(
+                        |e: unidpp_model::EnumParseError| TierAError::Decode(e.to_string()),
+                    )?)
+                }
                 TAG_VALIDITY_FROM => {
                     validity_from = Some(r.read_str()?.parse().map_err(TierAError::Model)?)
                 }
@@ -283,7 +295,8 @@ fn expect_tag(r: &mut CanonicalReader<'_>, tag: u8) -> Result<(), TierAError> {
 }
 
 fn read_raw(r: &mut CanonicalReader<'_>, len: usize) -> Result<Vec<u8>, TierAError> {
-    r.read_raw(len).map_err(|e| TierAError::Decode(e.to_string()))
+    r.read_raw(len)
+        .map_err(|e| TierAError::Decode(e.to_string()))
 }
 
 #[cfg(test)]
@@ -291,7 +304,9 @@ mod tests {
     use super::*;
     use crate::payload::TierAPayload;
     use unidpp_event::{EventLog, SafetyFlag, Status};
-    use unidpp_model::{Interval, PassportId, ProductIdentifier, SigSlot, SignatureSuite, Timestamp};
+    use unidpp_model::{
+        Interval, PassportId, ProductIdentifier, SigSlot, SignatureSuite, Timestamp,
+    };
 
     fn sample(signatures: Vec<unidpp_model::SigSlot>) -> TierAPayload {
         TierAPayload {
@@ -346,7 +361,11 @@ mod tests {
         let payload = sample(vec![SigSlot::placeholder(SignatureSuite::MlDsa87, "k1")]);
         let err = packer.pack(&payload).unwrap_err();
         match err {
-            TierAError::OverBudget { projected, capacity, .. } => {
+            TierAError::OverBudget {
+                projected,
+                capacity,
+                ..
+            } => {
                 assert!(projected > capacity as usize);
             }
             other => panic!("expected OverBudget, got {other:?}"),
@@ -366,7 +385,11 @@ mod tests {
         let packer = TierAPacker::new(EcLevel::L, 40);
         let payload = sample(vec![]);
         let packed = packer.pack(&payload).unwrap();
-        assert!(packed.version <= 12, "minimal Tier-A must be small, got v{}", packed.version);
+        assert!(
+            packed.version <= 12,
+            "minimal Tier-A must be small, got v{}",
+            packed.version
+        );
         let _ = EventLog::new(payload.passport_id.clone());
     }
 }

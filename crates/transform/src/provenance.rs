@@ -50,7 +50,11 @@ impl ProvenanceGraph {
     }
 
     fn walk(&self, start: &PassportId, forward: bool) -> BTreeSet<PassportId> {
-        let adjacency = if forward { &self.outputs_of } else { &self.inputs_of };
+        let adjacency = if forward {
+            &self.outputs_of
+        } else {
+            &self.inputs_of
+        };
         let mut seen: BTreeSet<PassportId> = BTreeSet::new();
         let mut queue: Vec<PassportId> = vec![start.clone()];
         while let Some(node) = queue.pop() {
@@ -131,7 +135,13 @@ mod tests {
         let g = graph();
         assert_eq!(
             g.ancestors(&pid("battery-2")),
-            BTreeSet::from([pid("cell-2"), pid("cell-3"), pid("pack"), pid("mod-b"), pid("cell-1")])
+            BTreeSet::from([
+                pid("cell-2"),
+                pid("cell-3"),
+                pid("pack"),
+                pid("mod-b"),
+                pid("cell-1")
+            ])
         );
         let mut down = g.descendants(&pid("cell-1"));
         assert!(down.contains(&pid("pack")));

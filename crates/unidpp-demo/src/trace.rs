@@ -60,7 +60,12 @@ fn kv_line(key: &str, value: &str) -> String {
     let mut out = String::new();
     for (i, line) in body.lines().enumerate() {
         if i == 0 {
-            out.push_str(&format!("{}{} {}", " ".repeat(GUTTER), label, line.trim_start()));
+            out.push_str(&format!(
+                "{}{} {}",
+                " ".repeat(GUTTER),
+                label,
+                line.trim_start()
+            ));
         } else {
             out.push('\n');
             out.push_str(line);

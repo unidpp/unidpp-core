@@ -1,6 +1,6 @@
 //! Graded verification (invariant I9 / I13).
 //!
-//! Three verification readings, because law needs all three (PLAN.md):
+//! Three verification readings, because law needs all three (the UniDPP design framework):
 //! - *evidentiary*: what could a diligent verifier know at T, given the
 //!   then-current trust state — protects good-faith actors; their stamps
 //!   are the proof of diligence;

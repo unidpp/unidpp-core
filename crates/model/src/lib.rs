@@ -1,6 +1,6 @@
 //! UniDPP core model (crate `unidpp-model`).
 //!
-//! Implements the model-layer semantics of `isoiecjtc5/PLAN.md`:
+//! Implements the model-layer semantics of `the UniDPP design framework`:
 //! - design invariants I1-I3 (identity never re-minted, finest recorded
 //!   granularity, dormant identifiers allowed),
 //! - I5 typed relationship algebra (association / derivation / installation /

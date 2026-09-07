@@ -1,7 +1,7 @@
 //! Twin facts and trigger predicates.
 //!
 //! Profiles attach by *predicate on twin facts* (jurisdiction x sector x
-//! characteristic, PLAN.md L2): age, material content, heritage status,
+//! characteristic, the UniDPP design framework L2): age, material content, heritage status,
 //! market status. Time predicates are clock-fired applicability events
 //! (an object becoming >100 years old) handled by the dated-binding
 //! machinery, not by human declaration.
@@ -80,18 +80,43 @@ pub enum TriggerPredicate {
     All(Vec<TriggerPredicate>),
     AnyOf(Vec<TriggerPredicate>),
     Not(Box<TriggerPredicate>),
-    FactEq { path: String, value: FactValue },
-    FactNe { path: String, value: FactValue },
-    FactGt { path: String, value: FactValue },
-    FactGe { path: String, value: FactValue },
-    FactLt { path: String, value: FactValue },
-    FactLe { path: String, value: FactValue },
+    FactEq {
+        path: String,
+        value: FactValue,
+    },
+    FactNe {
+        path: String,
+        value: FactValue,
+    },
+    FactGt {
+        path: String,
+        value: FactValue,
+    },
+    FactGe {
+        path: String,
+        value: FactValue,
+    },
+    FactLt {
+        path: String,
+        value: FactValue,
+    },
+    FactLe {
+        path: String,
+        value: FactValue,
+    },
     /// Substring (Str) or membership (List).
-    FactContains { path: String, needle: String },
+    FactContains {
+        path: String,
+        needle: String,
+    },
     /// Clock-fired: the subject is at least `years` years old at `now`.
-    AgeAtLeast { years: u32 },
+    AgeAtLeast {
+        years: u32,
+    },
     /// Market-status predicate (CITES / cultural-goods / AML triggers).
-    MarketStatusIs { status: String },
+    MarketStatusIs {
+        status: String,
+    },
 }
 
 impl TriggerPredicate {
@@ -101,22 +126,18 @@ impl TriggerPredicate {
             TriggerPredicate::All(ps) => ps.iter().all(|p| p.eval(facts, now)),
             TriggerPredicate::AnyOf(ps) => ps.iter().any(|p| p.eval(facts, now)),
             TriggerPredicate::Not(p) => !p.eval(facts, now),
-            TriggerPredicate::FactEq { path, value } => {
-                facts.get(path) == Some(value)
+            TriggerPredicate::FactEq { path, value } => facts.get(path) == Some(value),
+            TriggerPredicate::FactNe { path, value } => facts.get(path).is_some_and(|v| v != value),
+            TriggerPredicate::FactGt { path, value } => {
+                facts.get(path).and_then(|v| cmp_values(v, value)) == Some(Ordering::Greater)
             }
-            TriggerPredicate::FactNe { path, value } => {
-                facts.get(path).is_some_and(|v| v != value)
-            }
-            TriggerPredicate::FactGt { path, value } => facts
-                .get(path)
-                .and_then(|v| cmp_values(v, value)) == Some(Ordering::Greater),
             TriggerPredicate::FactGe { path, value } => facts
                 .get(path)
                 .and_then(|v| cmp_values(v, value))
                 .is_some_and(|o| o != Ordering::Less),
-            TriggerPredicate::FactLt { path, value } => facts
-                .get(path)
-                .and_then(|v| cmp_values(v, value)) == Some(Ordering::Less),
+            TriggerPredicate::FactLt { path, value } => {
+                facts.get(path).and_then(|v| cmp_values(v, value)) == Some(Ordering::Less)
+            }
             TriggerPredicate::FactLe { path, value } => facts
                 .get(path)
                 .and_then(|v| cmp_values(v, value))
@@ -126,9 +147,9 @@ impl TriggerPredicate {
                 Some(FactValue::List(l)) => l.iter().any(|x| x == needle),
                 _ => false,
             },
-            TriggerPredicate::AgeAtLeast { years } => facts.born_on.is_some_and(|b| {
-                now.signed_secs_since(b) >= *years as i64 * JULIAN_YEAR_SECS
-            }),
+            TriggerPredicate::AgeAtLeast { years } => facts
+                .born_on
+                .is_some_and(|b| now.signed_secs_since(b) >= *years as i64 * JULIAN_YEAR_SECS),
             TriggerPredicate::MarketStatusIs { status } => matches!(
                 facts.get("subject.market-status"),
                 Some(FactValue::Str(s)) if s == status
@@ -142,11 +163,17 @@ impl TriggerPredicate {
             TriggerPredicate::Any => "any".into(),
             TriggerPredicate::All(ps) => format!(
                 "all({})",
-                ps.iter().map(|p| p.describe()).collect::<Vec<_>>().join(", ")
+                ps.iter()
+                    .map(|p| p.describe())
+                    .collect::<Vec<_>>()
+                    .join(", ")
             ),
             TriggerPredicate::AnyOf(ps) => format!(
                 "any-of({})",
-                ps.iter().map(|p| p.describe()).collect::<Vec<_>>().join(", ")
+                ps.iter()
+                    .map(|p| p.describe())
+                    .collect::<Vec<_>>()
+                    .join(", ")
             ),
             TriggerPredicate::Not(p) => format!("not({})", p.describe()),
             TriggerPredicate::FactEq { path, value } => format!("{path} == {value:?}"),
@@ -169,7 +196,10 @@ mod tests {
     fn facts() -> TwinFacts {
         TwinFacts::new()
             .set("subject.age-years", FactValue::Num("120".parse().unwrap()))
-            .set("subject.materials", FactValue::List(vec!["ivory".into(), "spruce".into()]))
+            .set(
+                "subject.materials",
+                FactValue::List(vec!["ivory".into(), "spruce".into()]),
+            )
             .set("subject.market-status", FactValue::Str("imported".into()))
             .with_born_on(Timestamp::from_secs(1_800_000_000))
     }

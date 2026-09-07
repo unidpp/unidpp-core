@@ -12,7 +12,7 @@
 //! - R6 Custody (social/control edges, orthogonal to structure)
 //! - R7 Membership (group nodes: shipments, kits, recall sets)
 //!
-//! EXPRESS core shape (PLAN.md):
+//! EXPRESS core shape (the UniDPP design framework):
 //! `PassportLink {type, direction, interval, binding: {method,
 //!  recoverability, visibility, slotId, pairing, alteration[]}}`.
 //!
@@ -116,7 +116,10 @@ impl fmt::Display for Alteration {
 impl FromStr for Alteration {
     type Err = EnumParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some(rest) = s.strip_prefix("other:").or_else(|| s.strip_prefix("OTHER:")) {
+        if let Some(rest) = s
+            .strip_prefix("other:")
+            .or_else(|| s.strip_prefix("OTHER:"))
+        {
             if !rest.trim().is_empty() {
                 return Ok(Alteration::Other(rest.trim().to_string()));
             }
@@ -165,7 +168,10 @@ impl fmt::Display for InstallMethod {
 impl FromStr for InstallMethod {
     type Err = EnumParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some(rest) = s.strip_prefix("other:").or_else(|| s.strip_prefix("OTHER:")) {
+        if let Some(rest) = s
+            .strip_prefix("other:")
+            .or_else(|| s.strip_prefix("OTHER:"))
+        {
             if !rest.trim().is_empty() {
                 return Ok(InstallMethod::Other(rest.trim().to_string()));
             }
@@ -175,7 +181,7 @@ impl FromStr for InstallMethod {
 }
 
 /// Edge visibility: `visibility: {edge, escrow: none|trustee, audiences[]}`
-/// (PLAN.md visibility rules).
+/// (the UniDPP design framework visibility rules).
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Visibility {
     pub edge: VisibilityClass,
@@ -212,9 +218,9 @@ impl Visibility {
 
     pub fn validate(&self) -> Result<(), ModelError> {
         match self.edge {
-            VisibilityClass::Escrowed if self.escrow.is_none() => Err(
-                ModelError::Validation("escrowed edge requires a trustee".into()),
-            ),
+            VisibilityClass::Escrowed if self.escrow.is_none() => Err(ModelError::Validation(
+                "escrowed edge requires a trustee".into(),
+            )),
             VisibilityClass::Blind => {
                 // Consumer edges are personal data: blind is the default;
                 // an escrow envelope is optional.
@@ -364,12 +370,11 @@ impl PassportLink {
                     ));
                 }
             }
-            LinkType::Association
-                if self.binding.is_some() => {
-                    return Err(ModelError::Validation(
-                        "association is navigational only and carries no binding".into(),
-                    ));
-                }
+            LinkType::Association if self.binding.is_some() => {
+                return Err(ModelError::Validation(
+                    "association is navigational only and carries no binding".into(),
+                ));
+            }
             _ => {}
         }
         Ok(())
@@ -398,7 +403,8 @@ mod tests {
     #[test]
     fn installation_interval_and_flow() {
         let parent = PassportId::new("urn:unidpp:passport:car-1").unwrap();
-        let mut link = PassportLink::installation(parent.clone(), binding(Recoverability::Harvestable), t(0));
+        let mut link =
+            PassportLink::installation(parent.clone(), binding(Recoverability::Harvestable), t(0));
         link.validate().unwrap();
         assert!(link.is_active_at(t(10)));
         // Open interval stays active into the future.
@@ -416,8 +422,12 @@ mod tests {
         assert!(!binding(Recoverability::Destructive).marketable_identity_continues());
         assert!(!binding(Recoverability::Absorbing).marketable_identity_continues());
         let parent = PassportId::new("urn:unidpp:passport:p").unwrap();
-        let destructive = PassportLink::installation(parent, binding(Recoverability::Destructive), t(0));
-        assert_eq!(destructive.identity_flow(), Some(IdentityFlow::ToMaterialPassport));
+        let destructive =
+            PassportLink::installation(parent, binding(Recoverability::Destructive), t(0));
+        assert_eq!(
+            destructive.identity_flow(),
+            Some(IdentityFlow::ToMaterialPassport)
+        );
     }
 
     #[test]
@@ -447,7 +457,9 @@ mod tests {
         assert!(v.validate().is_err());
         v.escrow = Some("trustee".into());
         assert!(v.validate().is_ok());
-        assert!(Visibility::restricted(vec!["repairer".into()]).validate().is_ok());
+        assert!(Visibility::restricted(vec!["repairer".into()])
+            .validate()
+            .is_ok());
     }
 
     #[test]

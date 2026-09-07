@@ -196,7 +196,13 @@ mod tests {
     fn mass_balance_in_minus_out_is_loss() {
         let reg = UnitRegistry::iso80000();
         let out = combine(&spec(&reg), &reg).unwrap();
-        assert_eq!(out.total_in.convert_to(&reg.unit("kg").unwrap(), &reg).unwrap().amount, "510".parse::<Decimal>().unwrap());
+        assert_eq!(
+            out.total_in
+                .convert_to(&reg.unit("kg").unwrap(), &reg)
+                .unwrap()
+                .amount,
+            "510".parse::<Decimal>().unwrap()
+        );
         assert_eq!(out.loss.amount, "70".parse::<Decimal>().unwrap());
         assert_eq!(out.consumed.len(), 2);
         assert_eq!(out.inherited_stamp_contexts.len(), 1);

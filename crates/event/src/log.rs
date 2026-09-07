@@ -203,7 +203,9 @@ impl EventLog {
             match &sealed.event.payload {
                 EventPayload::Issuance { .. } => status = Status::Issued,
                 EventPayload::StatusChange { to, .. } => status = *to,
-                EventPayload::Split { parent_consumed, .. } => {
+                EventPayload::Split {
+                    parent_consumed, ..
+                } => {
                     if *parent_consumed {
                         status = Status::Transformed;
                     }
@@ -338,7 +340,13 @@ mod tests {
         .unwrap();
         log.append(e0.clone(), None, None).unwrap();
         let err = log.append(e0, None, None).unwrap_err();
-        assert!(matches!(err, EventError::Seq { expected: 1, got: 0 }));
+        assert!(matches!(
+            err,
+            EventError::Seq {
+                expected: 1,
+                got: 0
+            }
+        ));
     }
 
     #[test]
@@ -368,7 +376,10 @@ mod tests {
         assert!(json.contains("holder-3"));
         json = json.replacen("holder-3", "holder-X", 1);
         let tampered: EventLog = serde_json::from_str(&json).unwrap();
-        assert!(matches!(log_cmp_verify(&tampered), Err(EventError::ChainBroken { .. })));
+        assert!(matches!(
+            log_cmp_verify(&tampered),
+            Err(EventError::ChainBroken { .. })
+        ));
     }
 
     fn log_cmp_verify(log: &EventLog) -> Result<(), EventError> {

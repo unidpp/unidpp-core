@@ -1,6 +1,6 @@
 //! Graded trust markers and multi-suite signature framing (invariant I9).
 //!
-//! Trust markers (PLAN.md): every element/event carries one of
+//! Trust markers (the UniDPP design framework): every element/event carries one of
 //! unsigned / self-declared / third-party attested / multi-signed /
 //! log-anchored. Multi-suite co-signature model: ECDSA + SM2 + ML-DSA, so
 //! every jurisdiction verifies under its own crypto policy.
@@ -132,10 +132,13 @@ impl SigSlot {
 
     /// Bytes the filled slot occupies on a carrier.
     pub fn projected_len(&self) -> usize {
-        1 + 1 + self.key_id.len() + 2 + match &self.signature {
-            Some(sig) => sig.len(),
-            None => self.suite.signature_len(),
-        }
+        1 + 1
+            + self.key_id.len()
+            + 2
+            + match &self.signature {
+                Some(sig) => sig.len(),
+                None => self.suite.signature_len(),
+            }
     }
 }
 
@@ -156,7 +159,10 @@ mod tests {
     #[test]
     fn marker_derivation() {
         assert_eq!(TrustMarker::of(0, 0, false, false), TrustMarker::Unsigned);
-        assert_eq!(TrustMarker::of(1, 1, false, false), TrustMarker::SelfDeclared);
+        assert_eq!(
+            TrustMarker::of(1, 1, false, false),
+            TrustMarker::SelfDeclared
+        );
         assert_eq!(TrustMarker::of(1, 1, true, false), TrustMarker::Attested);
         assert_eq!(TrustMarker::of(2, 2, true, false), TrustMarker::MultiSigned);
         assert_eq!(TrustMarker::of(1, 1, false, true), TrustMarker::LogAnchored);

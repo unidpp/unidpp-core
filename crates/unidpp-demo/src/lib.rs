@@ -1,10 +1,10 @@
 //! Narrated demonstration scenarios for the UniDPP core (P4 pilot).
 //!
-//! Each scenario replays one PLAN.md storyline against the real crates
+//! Each scenario replays one the UniDPP design framework storyline against the real crates
 //! (`unidpp-model`, `unidpp-transform`, `unidpp-event`, `unidpp-tier-a`,
 //! `unidpp-verdict`) and prints a step-by-step trace: the event, its
 //! commitment, the state change, and a one-line rationale citing the
-//! design invariants I1-I14 of `isoiecjtc5/PLAN.md`.
+//! design invariants I1-I14 of `the UniDPP design framework`.
 //!
 //! Determinism: every timestamp is fixed, every salt is derived from the
 //! run seed through [`unidpp_event::salt_from_seed`], and no wall-clock
@@ -136,10 +136,16 @@ pub fn fmt_predicate(p: &unidpp_model::TriggerPredicate) -> String {
         match p {
             TP::Any => "any".into(),
             TP::All(ps) => {
-                format!("all({})", ps.iter().map(walk).collect::<Vec<_>>().join(" and "))
+                format!(
+                    "all({})",
+                    ps.iter().map(walk).collect::<Vec<_>>().join(" and ")
+                )
             }
             TP::AnyOf(ps) => {
-                format!("any-of({})", ps.iter().map(walk).collect::<Vec<_>>().join(" or "))
+                format!(
+                    "any-of({})",
+                    ps.iter().map(walk).collect::<Vec<_>>().join(" or ")
+                )
             }
             TP::Not(p) => format!("not({})", walk(p)),
             TP::FactEq { path, value } => format!("{path} == {}", val(value)),

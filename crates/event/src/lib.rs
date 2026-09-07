@@ -2,7 +2,7 @@
 //! hash-chained event log, and salted commitments with blind-edge
 //! support.
 //!
-//! PLAN.md invariants implemented here:
+//! the UniDPP design framework invariants implemented here:
 //! - I4 append-only event sourcing: the distributed, log-anchored event
 //!   log is the authoritative record; nothing is ever edited in place —
 //!   every post-first-sale change is an appended event.
@@ -20,14 +20,13 @@ pub mod log;
 pub mod payload;
 pub mod status;
 
-pub use commitment::{
-    event_commitment, parent_commitment, salt_from_seed, verify_parent_binding,
-};
+pub use commitment::{event_commitment, parent_commitment, salt_from_seed, verify_parent_binding};
 pub use event_type::EventType;
 pub use log::{EventLog, SaltStore, SealedEvent};
-pub use payload::{BlindInstallSpec,
-    BlindInstallRef, DisclosureCeremony, EscrowEnvelope, EventPayload, InstallTarget,
-    RepairAuthorization, SecurityFlagKind, Stamp, StampMode, TypedEvent, UninstallOutcome,
+pub use payload::{
+    BlindInstallRef, BlindInstallSpec, DisclosureCeremony, EscrowEnvelope, EventPayload,
+    InstallTarget, RepairAuthorization, SecurityFlagKind, Stamp, StampMode, TypedEvent,
+    UninstallOutcome,
 };
 pub use status::{can_transition, Status};
 
@@ -65,7 +64,10 @@ impl fmt::Display for EventError {
                 "append-only violation: expected seq {expected}, got {got}"
             ),
             EventError::TypeMismatch { event, payload } => {
-                write!(f, "payload `{payload}` does not match event class `{event}`")
+                write!(
+                    f,
+                    "payload `{payload}` does not match event class `{event}`"
+                )
             }
             EventError::IllegalTransition { from, to } => {
                 write!(f, "illegal status transition {from} -> {to}")

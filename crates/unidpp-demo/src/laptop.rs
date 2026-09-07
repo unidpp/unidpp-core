@@ -15,7 +15,10 @@
 use std::collections::BTreeSet;
 use std::io::Write;
 
-use unidpp_event::{BlindInstallSpec, verify_parent_binding, EventLog, EventType, EventPayload, InstallTarget, TypedEvent};
+use unidpp_event::{
+    verify_parent_binding, BlindInstallSpec, EventLog, EventPayload, EventType, InstallTarget,
+    TypedEvent,
+};
 use unidpp_model::{
     CapabilityClass, DataPointRef, FactValue, FreshnessRequirement, InstallMethod, Interval,
     Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
@@ -25,7 +28,7 @@ use unidpp_model::{
 use unidpp_tier_a::{EcLevel, TierAPacker, TierAPayload};
 use unidpp_verdict::{Degradation, Outcome, Reading, VerdictBuilder};
 
-use crate::{print_verdict, short_hash, salt_for, DemoError, Trace};
+use crate::{print_verdict, salt_for, short_hash, DemoError, Trace};
 
 const LAPTOP_PID: &str = "urn:iso:std:iso-iec:15459:unidpp:passport:84120099012345";
 const BATTERY_PID: &str = "urn:unidpp:passport:battery-pack-bp52-000841";
@@ -132,7 +135,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          binding urn:unidpp:profile:eu-espr-electronics",
     )?;
     tr.kv("commitment", &short_hash(&l0).to_string())?;
-    tr.kv("state", "laptop 84120099012345: 0 -> 1 sealed events; status issued")?;
+    tr.kv(
+        "state",
+        "laptop 84120099012345: 0 -> 1 sealed events; status issued",
+    )?;
     tr.note(
         "The instance references its exact type version (hw-rev-b is \
          visible, eliminating silent revisions) and overrides with \
@@ -207,7 +213,11 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventPayload::Install {
             target: InstallTarget::Blind(b),
         } => b,
-        other => return Err(DemoError::msg(format!("expected blind install, got {other:?}"))),
+        other => {
+            return Err(DemoError::msg(format!(
+                "expected blind install, got {other:?}"
+            )))
+        }
     };
     let proof_ok = verify_parent_binding(&laptop_id, &install_salt, &blind.commitment);
     tr.kv(
@@ -263,7 +273,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          counterparty signed, trust marker self-declared",
     )?;
     tr.kv("commitment", &short_hash(&l1).to_string())?;
-    tr.kv("state", "laptop: 1 -> 2 sealed events; custodian now consumer-anon-1")?;
+    tr.kv(
+        "state",
+        "laptop: 1 -> 2 sealed events; custodian now consumer-anon-1",
+    )?;
     tr.note(
         "Custody is a social edge orthogonal to structure: ownership changes \
          while composition stays fixed, and the signed ceremony survives \
@@ -296,7 +309,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
          marker self-declared",
     )?;
     tr.kv("commitment", &short_hash(&l2).to_string())?;
-    tr.kv("state", "laptop: 2 -> 3 sealed events; firmware vector updated")?;
+    tr.kv(
+        "state",
+        "laptop: 2 -> 3 sealed events; firmware vector updated",
+    )?;
     tr.note(
         "Capability enablement changes declared characteristics with no \
          physical change; nothing is edited in place, and such events can \

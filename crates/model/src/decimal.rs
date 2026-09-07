@@ -71,8 +71,8 @@ fn scale_to(m: i128, from: i32, to: i32) -> Result<i128, ModelError> {
     if from == to {
         return Ok(m);
     }
-    let factor = pow10((from - to) as u32)
-        .ok_or_else(|| ModelError::Overflow("decimal scaling".into()))?;
+    let factor =
+        pow10((from - to) as u32).ok_or_else(|| ModelError::Overflow("decimal scaling".into()))?;
     m.checked_mul(factor)
         .ok_or_else(|| ModelError::Overflow("decimal scaling".into()))
 }
@@ -97,7 +97,10 @@ impl Decimal {
     }
 
     pub fn from_i64(v: i64) -> Decimal {
-        Decimal { mant: v as i128, exp: 0 }
+        Decimal {
+            mant: v as i128,
+            exp: 0,
+        }
     }
 
     pub fn is_zero(&self) -> bool {
@@ -129,12 +132,7 @@ impl Decimal {
             (false, true) => Ordering::Greater,
             (true, false) => Ordering::Less,
             _ => {
-                let ord = cmp_magnitudes(
-                    self.mant.abs(),
-                    self.exp,
-                    other.mant.abs(),
-                    other.exp,
-                );
+                let ord = cmp_magnitudes(self.mant.abs(), self.exp, other.mant.abs(), other.exp);
                 if a_neg {
                     ord.reverse()
                 } else {
@@ -290,11 +288,7 @@ impl FromStr for Decimal {
                     }
                 }
                 '.' if !seen_dot => seen_dot = true,
-                _ => {
-                    return Err(ModelError::Parse(format!(
-                        "invalid decimal `{s}`"
-                    )))
-                }
+                _ => return Err(ModelError::Parse(format!("invalid decimal `{s}`"))),
             }
         }
         if !seen_digit {
@@ -364,7 +358,10 @@ mod tests {
         assert_eq!(d("1.25").add(&d("2.5")).unwrap(), d("3.75"));
         assert_eq!(d("1.25").sub(&d("2.5")).unwrap(), d("-1.25"));
         assert_eq!(d("1.5").mul(&d("0.4")).unwrap(), d("0.6"));
-        assert_eq!(Decimal::sum([&d("0.1"), &d("0.2"), &d("0.3")]).unwrap(), d("0.6"));
+        assert_eq!(
+            Decimal::sum([&d("0.1"), &d("0.2"), &d("0.3")]).unwrap(),
+            d("0.6")
+        );
     }
 
     #[test]

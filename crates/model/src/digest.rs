@@ -1,6 +1,6 @@
 //! Commitment hashes and deterministic canonical byte serialization.
 //!
-//! PLAN.md: "logs anchor commitments (hashes), never facts — log operators
+//! the UniDPP design framework: "logs anchor commitments (hashes), never facts — log operators
 //! cannot correlate edges". Every hash in the core is a SHA-256 commitment
 //! over canonically serialized bytes; salts are supplied by the caller and
 //! never persisted alongside the commitment (salt discipline is enforced by
@@ -66,8 +66,7 @@ impl fmt::Display for Hash {
 impl FromStr for Hash {
     type Err = ModelError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Hash::from_hex(s)
-            .ok_or_else(|| ModelError::Parse(format!("not a 64-char hex hash: `{s}`")))
+        Hash::from_hex(s).ok_or_else(|| ModelError::Parse(format!("not a 64-char hex hash: `{s}`")))
     }
 }
 
@@ -80,9 +79,8 @@ impl serde::Serialize for Hash {
 impl<'de> serde::Deserialize<'de> for Hash {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let s = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Hash::from_hex(&s).ok_or_else(|| {
-            serde::de::Error::custom(format!("not a 64-char hex hash: `{s}`"))
-        })
+        Hash::from_hex(&s)
+            .ok_or_else(|| serde::de::Error::custom(format!("not a 64-char hex hash: `{s}`")))
     }
 }
 

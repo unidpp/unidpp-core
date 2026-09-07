@@ -1,8 +1,8 @@
 //! Property: hash-chain consistency on random event streams; tamper and
 //! truncation detection; append-only sequence enforcement.
 
-use unidpp_event::{EventError, EventLog, EventType, EventPayload, SaltStore, Status, TypedEvent};
-use unidpp_model::{PassportId, ProfileId, TriggerPredicate, TrustMarker, Timestamp};
+use unidpp_event::{EventError, EventLog, EventPayload, EventType, SaltStore, Status, TypedEvent};
+use unidpp_model::{PassportId, ProfileId, Timestamp, TriggerPredicate, TrustMarker};
 use unidpp_transform::Rng;
 
 fn pid() -> PassportId {
@@ -11,25 +11,38 @@ fn pid() -> PassportId {
 
 fn random_event(rng: &mut Rng, seq: u64, at: i64) -> TypedEvent {
     let t = Timestamp::from_secs(at);
-    let marker = [TrustMarker::Unsigned, TrustMarker::SelfDeclared, TrustMarker::Attested]
-        [rng.range(0, 3) as usize];
+    let marker = [
+        TrustMarker::Unsigned,
+        TrustMarker::SelfDeclared,
+        TrustMarker::Attested,
+    ][rng.range(0, 3) as usize];
     match rng.range(0, 7) {
         0 => TypedEvent::new(
-            seq, t, "custodian", "actor-1", EventType::CustodyTransfer,
+            seq,
+            t,
+            "custodian",
+            "actor-1",
+            EventType::CustodyTransfer,
             EventPayload::CustodyTransfer {
                 from: format!("from-{}", rng.range(0, 100)),
                 to: format!("to-{}", rng.range(0, 100)),
                 counterparty_signed: rng.bool(),
-            }, marker,
+            },
+            marker,
         ),
         1 => TypedEvent::new(
-            seq, t, "eo", "eo-1", EventType::Correction,
+            seq,
+            t,
+            "eo",
+            "eo-1",
+            EventType::Correction,
             EventPayload::Correction {
                 field: format!("field-{}", rng.range(0, 20)),
                 prior_value: format!("v-{}", rng.range(0, 1000)),
                 new_value: format!("v-{}", rng.range(0, 1000)),
                 reason: "administrative".into(),
-            }, marker,
+            },
+            marker,
         ),
         2 => {
             let legal = [
@@ -44,12 +57,25 @@ fn random_event(rng: &mut Rng, seq: u64, at: i64) -> TypedEvent {
             ];
             let (from, to) = legal[rng.range(0, legal.len() as u64) as usize];
             TypedEvent::new(
-                seq, t, "regulator", "reg-1", EventType::StatusChange,
-                EventPayload::StatusChange { from, to, authority: "reg".into() }, marker,
+                seq,
+                t,
+                "regulator",
+                "reg-1",
+                EventType::StatusChange,
+                EventPayload::StatusChange {
+                    from,
+                    to,
+                    authority: "reg".into(),
+                },
+                marker,
             )
         }
         3 => TypedEvent::new(
-            seq, t, "device", "bms", EventType::MilestoneRecord,
+            seq,
+            t,
+            "device",
+            "bms",
+            EventType::MilestoneRecord,
             EventPayload::MilestoneRecord {
                 counters: [
                     ("cycles".to_string(), format!("{}", rng.range(0, 100_000))),
@@ -58,21 +84,39 @@ fn random_event(rng: &mut Rng, seq: u64, at: i64) -> TypedEvent {
                 .into_iter()
                 .map(|(k, v)| (k, v.parse().unwrap()))
                 .collect(),
-            }, marker,
+            },
+            marker,
         ),
         4 => TypedEvent::new(
-            seq, t, "issuing authority", "eo-1", EventType::Issuance,
-            EventPayload::Issuance { derived: rng.bool(), inputs: vec![] }, marker,
+            seq,
+            t,
+            "issuing authority",
+            "eo-1",
+            EventType::Issuance,
+            EventPayload::Issuance {
+                derived: rng.bool(),
+                inputs: vec![],
+            },
+            marker,
         ),
         5 => TypedEvent::new(
-            seq, t, "regulator", "reg-1", EventType::RecallCampaign,
+            seq,
+            t,
+            "regulator",
+            "reg-1",
+            EventType::RecallCampaign,
             EventPayload::RecallCampaign {
                 campaign: format!("R-{}", rng.range(0, 999)),
                 predicate: TriggerPredicate::Any,
-            }, marker,
+            },
+            marker,
         ),
         _ => TypedEvent::new(
-            seq, t, "any verifier", "verifier-1", EventType::InspectionStamp,
+            seq,
+            t,
+            "any verifier",
+            "verifier-1",
+            EventType::InspectionStamp,
             EventPayload::InspectionStamp {
                 stamp: unidpp_event::Stamp {
                     attester: format!("attester-{}", rng.range(0, 50)),
@@ -90,7 +134,8 @@ fn random_event(rng: &mut Rng, seq: u64, at: i64) -> TypedEvent {
                     log_anchored_at: t,
                     quantity_context: None,
                 },
-            }, marker,
+            },
+            marker,
         ),
     }
     .unwrap()
@@ -109,7 +154,8 @@ fn build_log(rng: &mut Rng, salted: bool) -> (EventLog, SaltStore) {
         } else {
             None
         };
-        log.append(event, salt, if salt.is_some() { Some(seq) } else { None }).unwrap();
+        log.append(event, salt, if salt.is_some() { Some(seq) } else { None })
+            .unwrap();
     }
     (log, salts)
 }
@@ -120,7 +166,10 @@ fn random_chains_verify_and_round_trip() {
         let mut rng = Rng::new(seed.wrapping_mul(0xA076_1D64_78BD_642F));
         for salted in [false, true] {
             let (log, salts) = build_log(&mut rng, salted);
-            assert!(log.verify().is_ok(), "chain must verify (seed {seed}, salted {salted})");
+            assert!(
+                log.verify().is_ok(),
+                "chain must verify (seed {seed}, salted {salted})"
+            );
             assert!(log.verify_with_salts(&salts).is_ok());
             // Serialization round trip preserves the chain.
             let json = serde_json::to_string(&log).unwrap();
@@ -141,11 +190,7 @@ fn tampering_is_detected() {
         let mut v: serde_json::Value = serde_json::from_str(json).unwrap();
         let sealed = v.get_mut("sealed").unwrap().as_array_mut().unwrap();
         let last = sealed.last_mut().unwrap();
-        let actor = last
-            .get_mut("event")
-            .unwrap()
-            .get_mut("actor_id")
-            .unwrap();
+        let actor = last.get_mut("event").unwrap().get_mut("actor_id").unwrap();
         let s = actor.as_str().unwrap().to_string();
         *actor = serde_json::Value::String(format!("TAMPERED-{s}"));
         serde_json::to_string(&v).unwrap()
@@ -157,7 +202,10 @@ fn tampering_is_detected() {
         let (log, _salts) = build_log(&mut rng, false);
         let json = serde_json::to_string(&log).unwrap();
         let tampered: EventLog = serde_json::from_str(&mutate_last_actor(&json)).unwrap();
-        assert!(matches!(tampered.verify(), Err(EventError::ChainBroken { .. })));
+        assert!(matches!(
+            tampered.verify(),
+            Err(EventError::ChainBroken { .. })
+        ));
 
         // Salted: salt-aware verification catches it.
         let (log2, salts2) = build_log(&mut rng, true);

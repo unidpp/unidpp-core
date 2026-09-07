@@ -12,8 +12,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::Write;
 
-use unidpp_event::{BlindInstallSpec, 
-    verify_parent_binding, EventLog, EventType, EventPayload, SaltStore, Status, TypedEvent,
+use unidpp_event::{
+    verify_parent_binding, BlindInstallSpec, EventLog, EventPayload, EventType, SaltStore, Status,
+    TypedEvent,
 };
 use unidpp_model::{
     CapabilityClass, DataPointRef, Decimal, FactValue, FreshnessRequirement, InstallMethod,
@@ -28,7 +29,7 @@ use unidpp_transform::{
 };
 use unidpp_verdict::{Degradation, Failure, Outcome, Reading, VerdictBuilder};
 
-use crate::{print_verdict, short_hash, salt_for, DemoError, Trace};
+use crate::{print_verdict, salt_for, short_hash, DemoError, Trace};
 
 fn pid(n: &str) -> PassportId {
     PassportId::new(&format!("urn:unidpp:passport:{n}")).expect("valid passport id")
@@ -226,7 +227,10 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
     let c2 = pack_log
         .append(e, None, None)
         .map_err(|e| DemoError::msg(e.to_string()))?;
-    tr.kv("event", "Split by harvester (custodian), trust marker attested")?;
+    tr.kv(
+        "event",
+        "Split by harvester (custodian), trust marker attested",
+    )?;
     tr.kv("commitment", &short_hash(&c2).to_string())?;
     tr.kv(
         "state",
@@ -275,17 +279,27 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
     salts.remember(3, install_salt);
     let pack_json = serde_json::to_string(&pack_log).map_err(|e| DemoError::msg(e.to_string()))?;
     let salt_hex: String = install_salt.iter().map(|b| format!("{b:02x}")).collect();
-    assert!(!pack_json.contains(car.as_str()), "blind edge leaked the car identity");
+    assert!(
+        !pack_json.contains(car.as_str()),
+        "blind edge leaked the car identity"
+    );
     assert!(!pack_json.contains(&salt_hex), "blind edge leaked the salt");
     let blind_ref = match &pack_log.sealed()[3].event.payload {
         EventPayload::Install {
             target: unidpp_event::InstallTarget::Blind(b),
         } => b,
-        other => return Err(DemoError::msg(format!("expected blind install, got {other:?}"))),
+        other => {
+            return Err(DemoError::msg(format!(
+                "expected blind install, got {other:?}"
+            )))
+        }
     };
     let proof_ok = verify_parent_binding(&car, &install_salt, &blind_ref.commitment);
     let proof_wrong = verify_parent_binding(&other_parent, &install_salt, &blind_ref.commitment);
-    tr.kv("event", "Install (blind edge) by repairer-9, trust marker attested")?;
+    tr.kv(
+        "event",
+        "Install (blind edge) by repairer-9, trust marker attested",
+    )?;
     tr.kv(
         "commitment",
         &format!(
@@ -369,9 +383,15 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
             "taint {{fraud, source cell-a, window from 2023-07-14}} propagates: \
              pack-1 voids ab initio: {}, mod-1 voids ab initio: {}, cell-b \
              voids ab initio: {}; recall set of cell-a = [{}]",
-            graph.taints_of(&pid("pack-1"), &taint_index).voids_ab_initio(),
-            graph.taints_of(&pid("mod-1"), &taint_index).voids_ab_initio(),
-            graph.taints_of(&pid("cell-b"), &taint_index).voids_ab_initio(),
+            graph
+                .taints_of(&pid("pack-1"), &taint_index)
+                .voids_ab_initio(),
+            graph
+                .taints_of(&pid("mod-1"), &taint_index)
+                .voids_ab_initio(),
+            graph
+                .taints_of(&pid("cell-b"), &taint_index)
+                .voids_ab_initio(),
             recall_names.join(", "),
         ),
     )?;
@@ -474,8 +494,8 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
             packed.margin()
         ),
     )?;
-    let decoded = TierAPacker::decode(packed.as_slice())
-        .map_err(|e| DemoError::msg(e.to_string()))?;
+    let decoded =
+        TierAPacker::decode(packed.as_slice()).map_err(|e| DemoError::msg(e.to_string()))?;
     tr.kv(
         "round trip",
         &format!(
@@ -550,7 +570,9 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         .build();
     print_verdict(&mut tr, "verdict 1", &v)?;
     let live_profile = ProfileManifest {
-        freshness: FreshnessRequirement::FreshWithin { max_age_secs: 3_600 },
+        freshness: FreshnessRequirement::FreshWithin {
+            max_age_secs: 3_600,
+        },
         ..profile.clone()
     };
     let v_stale = VerdictBuilder::new(&pack_log, t(1_700_510_000))
@@ -602,19 +624,17 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         v_offline.outcome,
         Outcome::Degraded(Degradation::OfflineNoAnchor)
     ));
-    assert!(matches!(v_fail.outcome, Outcome::Fail(Failure::BrokenChain)));
+    assert!(matches!(
+        v_fail.outcome,
+        Outcome::Fail(Failure::BrokenChain)
+    ));
 
     tr.blank()?;
     tr.done()?;
     Ok(())
 }
 
-fn issue_cell(
-    tr: &mut Trace<'_>,
-    name: &str,
-    maker: &str,
-    at: i64,
-) -> Result<EventLog, DemoError> {
+fn issue_cell(tr: &mut Trace<'_>, name: &str, maker: &str, at: i64) -> Result<EventLog, DemoError> {
     tr.step(&format!("Issuance of {name} (finest recorded granularity)"))?;
     let mut log = EventLog::new(pid(name));
     let e = TypedEvent::new(
@@ -635,13 +655,14 @@ fn issue_cell(
         .map_err(|e| DemoError::msg(e.to_string()))?;
     tr.kv(
         "event",
-        &format!(
-            "Issuance by issuing authority / {maker}, trust marker self-declared"
-        ),
+        &format!("Issuance by issuing authority / {maker}, trust marker self-declared"),
     )?;
     tr.kv(
         "commitment",
-        &format!("{} (unsalted; commits to the canonical body)", short_hash(&c)),
+        &format!(
+            "{} (unsalted; commits to the canonical body)",
+            short_hash(&c)
+        ),
     )?;
     tr.kv(
         "state",

@@ -39,7 +39,10 @@ fn default_seed() -> u64 {
 }
 
 fn parse_seed(s: &str) -> Result<u64, String> {
-    let body = s.strip_prefix("0x").or_else(|| s.strip_prefix("0X")).unwrap_or(s);
+    let body = s
+        .strip_prefix("0x")
+        .or_else(|| s.strip_prefix("0X"))
+        .unwrap_or(s);
     u64::from_str_radix(body, 16).map_err(|_| format!("seed `{s}` is not a hexadecimal u64"))
 }
 

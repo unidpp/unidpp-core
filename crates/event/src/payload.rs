@@ -433,7 +433,11 @@ mod tests {
             target: InstallTarget::Blind(b),
         } = &rt
         {
-            assert!(crate::commitment::verify_parent_binding(&parent, &salt, &b.commitment));
+            assert!(crate::commitment::verify_parent_binding(
+                &parent,
+                &salt,
+                &b.commitment
+            ));
         } else {
             panic!("expected blind install");
         }

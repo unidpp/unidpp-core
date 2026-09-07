@@ -189,6 +189,13 @@ pub enum EventPayload {
         removed: PassportId,
         added: PassportId,
     },
+    /// E6: a component is added as an upgrade — the new child
+    /// reference (the taxonomy's only installer-appended install-time
+    /// class; the component's own passport carries the installation
+    /// edge).
+    UpgradeInstall {
+        added: PassportId,
+    },
     RepairPerform {
         authorization: RepairAuthorization,
         consumed_parts: Vec<PassportId>,
@@ -262,6 +269,7 @@ impl EventPayload {
             EventPayload::Uninstall { .. } => EventType::Uninstall,
             EventPayload::PartReplace { .. } => EventType::PartReplace,
             EventPayload::ConsumableReplace { .. } => EventType::ConsumableReplace,
+            EventPayload::UpgradeInstall { .. } => EventType::UpgradeInstall,
             EventPayload::RepairPerform { .. } => EventType::RepairPerform,
             EventPayload::ProductModify { .. } => EventType::ProductModify,
             EventPayload::SoftwareUpdate { .. } => EventType::SoftwareUpdate,

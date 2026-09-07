@@ -1,0 +1,27 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/model",
+    "crates/transform",
+    "crates/event",
+    "crates/tier_a",
+    "crates/verdict",
+    "crates/unidpp-demo",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/unidpp/unidpp-core"
+rust-version = "1.75"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+unidpp-model = { path = "crates/model" }
+unidpp-transform = { path = "crates/transform" }
+unidpp-event = { path = "crates/event" }
+unidpp-tier-a = { path = "crates/tier_a" }
+unidpp-verdict = { path = "crates/verdict" }

@@ -1,0 +1,15 @@
+[package]
+name = "unidpp-transform"
+description = "UniDPP transformation algebra: quantities with registered units, split/combine with mass balance, taint propagation, provenance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+unidpp-model = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

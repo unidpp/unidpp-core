@@ -1,0 +1,15 @@
+[package]
+name = "unidpp-model"
+description = "UniDPP core model: scheme-agnostic identity, profile manifests, relationship algebra, trust markers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+sha2 = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

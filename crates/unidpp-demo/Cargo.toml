@@ -1,0 +1,29 @@
+[package]
+name = "unidpp-demo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "Narrated demonstration scenarios for the UniDPP core (P4 pilot)"
+
+# Both a library and a binary: the library exposes the scenario functions
+# (`battery_loop`, `car`, `laptop`) so they can be embedded and tested; the
+# binary is the narrated CLI. Integration tests run the compiled binary via
+# `env!("CARGO_BIN_EXE_unidpp-demo")` and also assert byte-level
+# determinism of its output across runs.
+[lib]
+name = "unidpp_demo"
+path = "src/lib.rs"
+
+[[bin]]
+name = "unidpp-demo"
+path = "src/main.rs"
+
+[dependencies]
+unidpp-model = { workspace = true }
+unidpp-transform = { workspace = true }
+unidpp-event = { workspace = true }
+unidpp-tier-a = { workspace = true }
+unidpp-verdict = { workspace = true }
+serde_json = { workspace = true }

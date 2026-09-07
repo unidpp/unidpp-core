@@ -1,0 +1,18 @@
+[package]
+name = "unidpp-verdict"
+description = "UniDPP graded verification: three readings, coverage reports, freshness verdicts, degradation ladder"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+unidpp-model = { workspace = true }
+unidpp-transform = { workspace = true }
+unidpp-event = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+unidpp-tier-a = { workspace = true }

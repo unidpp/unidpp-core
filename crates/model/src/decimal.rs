@@ -218,7 +218,7 @@ impl Eq for Decimal {}
 
 impl PartialOrd for Decimal {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp_value(other))
+        Some(self.cmp(other))
     }
 }
 

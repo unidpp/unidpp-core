@@ -7,7 +7,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use unidpp_event::{
+use unidpp_event::{BlindInstallSpec, 
     EventLog, EventType, EventPayload, Status, TypedEvent,
 };
 use unidpp_model::{
@@ -194,12 +194,14 @@ fn battery_loop_end_to_end() {
         EventPayload::blind_install(
             &car,
             &install_salt,
-            Interval::starting(t(1_700_300_000)),
-            InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
-            unidpp_model::Recoverability::Harvestable,
-            Pairing::Firmware,
-            Some("battery-slot-1".into()),
-            None,
+            BlindInstallSpec {
+                interval: Interval::starting(t(1_700_300_000)),
+                method: InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
+                recoverability: unidpp_model::Recoverability::Harvestable,
+                pairing: Pairing::Firmware,
+                slot_id: Some("battery-slot-1".into()),
+                escrow: None,
+            },
         ),
         TrustMarker::Attested,
     )

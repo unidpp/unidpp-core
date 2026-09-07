@@ -13,7 +13,7 @@
 
 use std::io::Write;
 
-use unidpp_event::{
+use unidpp_event::{BlindInstallSpec, 
     verify_parent_binding, EventLog, EventType, EventPayload, InstallTarget, TypedEvent,
 };
 use unidpp_model::{
@@ -118,7 +118,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "Issuance by issuing authority / cellco-eu, trust marker attested, \
          binding profile urn:unidpp:profile:eu-battery-2023-1542",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&b0)))?;
+    tr.kv("commitment", &short_hash(&b0).to_string())?;
     tr.kv("state", "battery-pack-bp52-000841: 0 -> 1 sealed events; status issued")?;
     tr.note(
         "The battery needs its own carrier precisely because it is \
@@ -150,7 +150,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "Issuance by issuing authority / oem-autowerke, trust marker attested, \
          binding profile urn:unidpp:profile:eu-vehicle-type-approval",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&c0)))?;
+    tr.kv("commitment", &short_hash(&c0).to_string())?;
     tr.kv("state", "car-wvwzzz1jzxw000841: 0 -> 1 sealed events; status issued")?;
     tr.note(
         "One passport per placed-on-market product identity; the parent \
@@ -171,12 +171,14 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventPayload::blind_install(
             &car_id,
             &install_salt,
-            Interval::starting(ts("2026-09-12T08:05:00Z")),
-            InstallMethod::Other("bolted-busbar".into()),
-            Recoverability::Harvestable,
-            Pairing::Firmware,
-            Some("traction-battery-1".into()),
-            None,
+            BlindInstallSpec {
+                interval: Interval::starting(ts("2026-09-12T08:05:00Z")),
+                method: InstallMethod::Other("bolted-busbar".into()),
+                recoverability: Recoverability::Harvestable,
+                pairing: Pairing::Firmware,
+                slot_id: Some("traction-battery-1".into()),
+                escrow: None,
+            },
         ),
         TrustMarker::Attested,
     )
@@ -253,14 +255,12 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "CustodyTransfer by dealer-lyon to consumer-anon-2, counterparty \
          signed, trust marker self-declared",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&c1)))?;
+    tr.kv("commitment", &short_hash(&c1).to_string())?;
     tr.kv(
         "state",
-        &format!(
-            "car: 1 -> 2 sealed events; custodian now consumer-anon-2; the \
+        "car: 1 -> 2 sealed events; custodian now consumer-anon-2; the \
              custody edge carries visibility class blind (object-to-household \
              linkage is personal data)",
-        ),
     )?;
     tr.note(
         "Post-sale custody extends the event chain, never overwrites it: the \
@@ -295,7 +295,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "MilestoneRecord by the battery management system (device role), trust \
          marker self-declared",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&b2)))?;
+    tr.kv("commitment", &short_hash(&b2).to_string())?;
     tr.kv("state", "battery: 2 -> 3 sealed events; counters cycle-count 815, soh 91.5")?;
     tr.note(
         "The device is a tier of the passport system, not a client: lifecycle \
@@ -334,7 +334,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "RecallCampaign urn:eu:recall:2027-06-batt-bp52 by eu-market-surveillance, \
          trust marker attested",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&b3)))?;
+    tr.kv("commitment", &short_hash(&b3).to_string())?;
     tr.kv(
         "predicate",
         &format!("published as {}; the recall set is never enumerated centrally", crate::fmt_predicate(&predicate)),

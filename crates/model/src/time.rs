@@ -106,8 +106,8 @@ impl Timestamp {
                     return Err(err("bad fractional seconds"));
                 }
                 let mut val: u64 = 0;
-                for i in start..pos {
-                    val = val * 10 + (b[i] - b'0') as u64;
+                for &d in &b[start..pos] {
+                    val = val * 10 + (d - b'0') as u64;
                 }
                 nanos = (val * 10u64.pow(9 - frac_len as u32)) as u32;
             }

@@ -12,7 +12,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::Write;
 
-use unidpp_event::{
+use unidpp_event::{BlindInstallSpec, 
     verify_parent_binding, EventLog, EventType, EventPayload, SaltStore, Status, TypedEvent,
 };
 use unidpp_model::{
@@ -227,7 +227,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         .append(e, None, None)
         .map_err(|e| DemoError::msg(e.to_string()))?;
     tr.kv("event", "Split by harvester (custodian), trust marker attested")?;
-    tr.kv("commitment", &format!("{}", short_hash(&c2)))?;
+    tr.kv("commitment", &short_hash(&c2).to_string())?;
     tr.kv(
         "state",
         &format!(
@@ -256,12 +256,14 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventPayload::blind_install(
             &car,
             &install_salt,
-            Interval::starting(t(1_700_300_000)),
-            InstallMethod::Known(KnownMethod::Keyed),
-            Recoverability::Harvestable,
-            Pairing::Firmware,
-            Some("battery-slot-1".into()),
-            None,
+            BlindInstallSpec {
+                interval: Interval::starting(t(1_700_300_000)),
+                method: InstallMethod::Known(KnownMethod::Keyed),
+                recoverability: Recoverability::Harvestable,
+                pairing: Pairing::Firmware,
+                slot_id: Some("battery-slot-1".into()),
+                escrow: None,
+            },
         ),
         TrustMarker::Attested,
     )
@@ -360,7 +362,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "event",
         "FlagSecurity (theft, police-report-77) on cell-a, trust marker attested",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&ct)))?;
+    tr.kv("commitment", &short_hash(&ct).to_string())?;
     tr.kv(
         "state",
         &format!(
@@ -403,7 +405,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "event",
         "EndOfWaste (evidence eow-cert-9) by recycler, trust marker attested",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&c4)))?;
+    tr.kv("commitment", &short_hash(&c4).to_string())?;
     tr.kv(
         "state",
         &format!(

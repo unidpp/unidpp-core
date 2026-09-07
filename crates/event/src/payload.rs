@@ -122,6 +122,18 @@ pub struct BlindInstallRef {
     pub method: InstallMethod,
 }
 
+/// Parameter object for [`EventPayload::blind_install`]: everything the
+/// blind edge records besides the (consumed) parent identity and salt.
+#[derive(Debug, Clone)]
+pub struct BlindInstallSpec {
+    pub interval: Interval,
+    pub method: InstallMethod,
+    pub recoverability: Recoverability,
+    pub pairing: Pairing,
+    pub slot_id: Option<String>,
+    pub escrow: Option<EscrowEnvelope>,
+}
+
 /// Installation target: open edge (full link) or blind edge.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum InstallTarget {
@@ -271,22 +283,17 @@ impl EventPayload {
     pub fn blind_install(
         parent: &PassportId,
         salt: &[u8; 32],
-        interval: Interval,
-        method: InstallMethod,
-        recoverability: Recoverability,
-        pairing: Pairing,
-        slot_id: Option<String>,
-        escrow: Option<EscrowEnvelope>,
+        spec: BlindInstallSpec,
     ) -> EventPayload {
         EventPayload::Install {
             target: InstallTarget::Blind(BlindInstallRef {
                 commitment: parent_commitment(parent, salt),
-                escrow,
-                interval,
-                slot_id,
-                pairing,
-                recoverability,
-                method,
+                escrow: spec.escrow,
+                interval: spec.interval,
+                slot_id: spec.slot_id,
+                pairing: spec.pairing,
+                recoverability: spec.recoverability,
+                method: spec.method,
             }),
         }
     }
@@ -408,12 +415,14 @@ mod tests {
         let payload = EventPayload::blind_install(
             &parent,
             &salt,
-            Interval::starting(Timestamp::from_secs(10)),
-            InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
-            Recoverability::Harvestable,
-            Pairing::Firmware,
-            Some("slot-1".into()),
-            None,
+            BlindInstallSpec {
+                interval: Interval::starting(Timestamp::from_secs(10)),
+                method: InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
+                recoverability: Recoverability::Harvestable,
+                pairing: Pairing::Firmware,
+                slot_id: Some("slot-1".into()),
+                escrow: None,
+            },
         );
         let json = serde_json::to_string(&payload).unwrap();
         assert!(!json.contains(parent.as_str()), "parent leaked: {json}");

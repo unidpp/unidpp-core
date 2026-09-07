@@ -102,33 +102,31 @@ impl TriggerPredicate {
             TriggerPredicate::AnyOf(ps) => ps.iter().any(|p| p.eval(facts, now)),
             TriggerPredicate::Not(p) => !p.eval(facts, now),
             TriggerPredicate::FactEq { path, value } => {
-                facts.get(path).map_or(false, |v| v == value)
+                facts.get(path) == Some(value)
             }
             TriggerPredicate::FactNe { path, value } => {
-                facts.get(path).map_or(false, |v| v != value)
+                facts.get(path).is_some_and(|v| v != value)
             }
             TriggerPredicate::FactGt { path, value } => facts
                 .get(path)
-                .and_then(|v| cmp_values(v, value))
-                .map_or(false, |o| o == Ordering::Greater),
+                .and_then(|v| cmp_values(v, value)) == Some(Ordering::Greater),
             TriggerPredicate::FactGe { path, value } => facts
                 .get(path)
                 .and_then(|v| cmp_values(v, value))
-                .map_or(false, |o| o != Ordering::Less),
+                .is_some_and(|o| o != Ordering::Less),
             TriggerPredicate::FactLt { path, value } => facts
                 .get(path)
-                .and_then(|v| cmp_values(v, value))
-                .map_or(false, |o| o == Ordering::Less),
+                .and_then(|v| cmp_values(v, value)) == Some(Ordering::Less),
             TriggerPredicate::FactLe { path, value } => facts
                 .get(path)
                 .and_then(|v| cmp_values(v, value))
-                .map_or(false, |o| o != Ordering::Greater),
+                .is_some_and(|o| o != Ordering::Greater),
             TriggerPredicate::FactContains { path, needle } => match facts.get(path) {
                 Some(FactValue::Str(s)) => s.contains(needle),
                 Some(FactValue::List(l)) => l.iter().any(|x| x == needle),
                 _ => false,
             },
-            TriggerPredicate::AgeAtLeast { years } => facts.born_on.map_or(false, |b| {
+            TriggerPredicate::AgeAtLeast { years } => facts.born_on.is_some_and(|b| {
                 now.signed_secs_since(b) >= *years as i64 * JULIAN_YEAR_SECS
             }),
             TriggerPredicate::MarketStatusIs { status } => matches!(

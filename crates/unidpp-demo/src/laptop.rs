@@ -15,7 +15,7 @@
 use std::collections::BTreeSet;
 use std::io::Write;
 
-use unidpp_event::{verify_parent_binding, EventLog, EventType, EventPayload, InstallTarget, TypedEvent};
+use unidpp_event::{BlindInstallSpec, verify_parent_binding, EventLog, EventType, EventPayload, InstallTarget, TypedEvent};
 use unidpp_model::{
     CapabilityClass, DataPointRef, FactValue, FreshnessRequirement, InstallMethod, Interval,
     Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
@@ -131,7 +131,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "Issuance by oem-nordwave (economic operator), trust marker attested, \
          binding urn:unidpp:profile:eu-espr-electronics",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&l0)))?;
+    tr.kv("commitment", &short_hash(&l0).to_string())?;
     tr.kv("state", "laptop 84120099012345: 0 -> 1 sealed events; status issued")?;
     tr.note(
         "The instance references its exact type version (hw-rev-b is \
@@ -181,12 +181,14 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         EventPayload::blind_install(
             &laptop_id,
             &install_salt,
-            Interval::starting(ts("2026-08-03T09:15:00Z")),
-            InstallMethod::Other("socketed-latch".into()),
-            Recoverability::Harvestable,
-            Pairing::Firmware,
-            Some("battery-bay-1".into()),
-            None,
+            BlindInstallSpec {
+                interval: Interval::starting(ts("2026-08-03T09:15:00Z")),
+                method: InstallMethod::Other("socketed-latch".into()),
+                recoverability: Recoverability::Harvestable,
+                pairing: Pairing::Firmware,
+                slot_id: Some("battery-bay-1".into()),
+                escrow: None,
+            },
         ),
         TrustMarker::Attested,
     )
@@ -260,7 +262,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "CustodyTransfer by retailer-kyoto-denshi to consumer-anon-1, \
          counterparty signed, trust marker self-declared",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&l1)))?;
+    tr.kv("commitment", &short_hash(&l1).to_string())?;
     tr.kv("state", "laptop: 1 -> 2 sealed events; custodian now consumer-anon-1")?;
     tr.note(
         "Custody is a social edge orthogonal to structure: ownership changes \
@@ -293,7 +295,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "SoftwareUpdate (system-firmware 1.04 -> 1.07) by oem-nordwave, trust \
          marker self-declared",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&l2)))?;
+    tr.kv("commitment", &short_hash(&l2).to_string())?;
     tr.kv("state", "laptop: 2 -> 3 sealed events; firmware vector updated")?;
     tr.note(
         "Capability enablement changes declared characteristics with no \
@@ -325,7 +327,7 @@ pub fn run(out: &mut dyn Write, seed: u64) -> Result<(), DemoError> {
         "PartReplace (sodimm-0042 out, sodimm-32g-0007 in, like-for-like \
          false) by repair-shibuya, trust marker attested",
     )?;
-    tr.kv("commitment", &format!("{}", short_hash(&l3)))?;
+    tr.kv("commitment", &short_hash(&l3).to_string())?;
     tr.kv(
         "state",
         "laptop: 3 -> 4 sealed events; BoM-instance updated; the removed \

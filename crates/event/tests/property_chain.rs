@@ -172,7 +172,7 @@ fn tampering_is_detected() {
 
 #[test]
 fn truncation_detected_against_anchor() {
-    let mut rng = Rng::new(0xC0FF_EE);
+    let mut rng = Rng::new(0xC0_FF_EE);
     let (log, _salts) = build_log(&mut rng, false);
     let anchor = log.head().unwrap();
     let mut shorter = log.clone();

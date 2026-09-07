@@ -364,13 +364,12 @@ impl PassportLink {
                     ));
                 }
             }
-            LinkType::Association => {
-                if self.binding.is_some() {
+            LinkType::Association
+                if self.binding.is_some() => {
                     return Err(ModelError::Validation(
                         "association is navigational only and carries no binding".into(),
                     ));
                 }
-            }
             _ => {}
         }
         Ok(())

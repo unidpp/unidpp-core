@@ -245,28 +245,26 @@ impl TierAPacker {
 
     /// Per-field budget report (bytes actually encoded).
     pub fn budget_report(payload: &TierAPayload) -> Vec<(&'static str, usize)> {
-        let mut report = Vec::new();
-        report.push(("product_id", payload.product_id.to_string().len()));
-        report.push(("resolver_uri", payload.resolver_uri.len()));
-        report.push(("passport_id", payload.passport_id.as_str().len()));
-        report.push(("eo_id", payload.eo_id.len()));
-        report.push(("status", payload.status.to_string().len()));
-        report.push(("safety", payload.safety.to_string().len()));
-        report.push((
-            "validity",
-            payload.validity.from.to_string().len()
-                + payload
-                    .validity
-                    .to
-                    .as_ref()
-                    .map(|t| t.to_string().len())
-                    .unwrap_or(0),
-        ));
-        report.push(("as_of", payload.as_of.to_string().len()));
-        report.push((
-            "log_head",
-            payload.log_head.map(|_| 64).unwrap_or(0),
-        ));
+        let mut report = vec![
+            ("product_id", payload.product_id.to_string().len()),
+            ("resolver_uri", payload.resolver_uri.len()),
+            ("passport_id", payload.passport_id.as_str().len()),
+            ("eo_id", payload.eo_id.len()),
+            ("status", payload.status.to_string().len()),
+            ("safety", payload.safety.to_string().len()),
+            (
+                "validity",
+                payload.validity.from.to_string().len()
+                    + payload
+                        .validity
+                        .to
+                        .as_ref()
+                        .map(|t| t.to_string().len())
+                        .unwrap_or(0),
+            ),
+            ("as_of", payload.as_of.to_string().len()),
+            ("log_head", payload.log_head.map(|_| 64).unwrap_or(0)),
+        ];
         for slot in &payload.signatures {
             report.push(("sig_slot", slot.projected_len()));
         }

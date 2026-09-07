@@ -9,7 +9,7 @@
 //!   salts (dictionary attacks gain nothing);
 //! - binding verification succeeds only with the correct pair.
 
-use unidpp_event::{
+use unidpp_event::{BlindInstallSpec, 
     parent_commitment, verify_parent_binding, EventLog, EventType, EventPayload, SaltStore, TypedEvent,
 };
 use unidpp_model::{
@@ -59,12 +59,14 @@ fn blind_edges_never_leak_parent_or_salt() {
             EventPayload::blind_install(
                 &parent,
                 &salt,
-                Interval::starting(Timestamp::from_secs(1_800_100_000)),
-                InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
-                Recoverability::Harvestable,
-                Pairing::Firmware,
-                Some(format!("slot-{}", rng.range(0, 8))),
-                None,
+                BlindInstallSpec {
+                    interval: Interval::starting(Timestamp::from_secs(1_800_100_000)),
+                    method: InstallMethod::Known(unidpp_model::KnownMethod::Keyed),
+                    recoverability: Recoverability::Harvestable,
+                    pairing: Pairing::Firmware,
+                    slot_id: Some(format!("slot-{}", rng.range(0, 8))),
+                    escrow: None,
+                },
             ),
             TrustMarker::Attested,
         )
@@ -141,12 +143,14 @@ fn enumeration_resistance_over_a_pool() {
             EventPayload::blind_install(
                 &parent,
                 &salt,
-                Interval::starting(Timestamp::from_secs(1)),
-                InstallMethod::Known(unidpp_model::KnownMethod::Fastened),
-                Recoverability::Restorable,
-                Pairing::None,
-                None,
-                None,
+                BlindInstallSpec {
+                    interval: Interval::starting(Timestamp::from_secs(1)),
+                    method: InstallMethod::Known(unidpp_model::KnownMethod::Fastened),
+                    recoverability: Recoverability::Restorable,
+                    pairing: Pairing::None,
+                    slot_id: None,
+                    escrow: None,
+                },
             ),
             TrustMarker::Unsigned,
         )

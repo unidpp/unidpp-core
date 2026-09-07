@@ -25,7 +25,7 @@ pub use commitment::{
 };
 pub use event_type::EventType;
 pub use log::{EventLog, SaltStore, SealedEvent};
-pub use payload::{
+pub use payload::{BlindInstallSpec,
     BlindInstallRef, DisclosureCeremony, EscrowEnvelope, EventPayload, InstallTarget,
     RepairAuthorization, SecurityFlagKind, Stamp, StampMode, TypedEvent, UninstallOutcome,
 };

@@ -1,0 +1,15 @@
+[package]
+name = "unidpp-grid"
+description = "The device-DPP grid: parallel sovereignty segments, signed policy objects, and the cross-segment commitment spine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+unidpp-model = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

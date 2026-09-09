@@ -6,6 +6,7 @@ members = [
     "crates/event",
     "crates/tier_a",
     "crates/verdict",
+    "crates/grid",
     "crates/unidpp-demo",
 ]
 
@@ -25,3 +26,4 @@ unidpp-transform = { path = "crates/transform" }
 unidpp-event = { path = "crates/event" }
 unidpp-tier-a = { path = "crates/tier_a" }
 unidpp-verdict = { path = "crates/verdict" }
+unidpp-grid = { path = "crates/grid" }

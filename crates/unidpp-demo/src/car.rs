@@ -19,9 +19,9 @@ use unidpp_event::{
 };
 use unidpp_model::{
     CapabilityClass, DataPointRef, Decimal, FactValue, FreshnessRequirement, InstallMethod,
-    Interval, Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
-    Recoverability, Resolution, SigSlot, SignatureSuite, Timestamp, Traversal, TriggerPredicate,
-    TrustMarker, TwinFacts, VisibilityClass,
+    Interval, IssuerClass, Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId,
+    ProfileManifest, Recoverability, Resolution, SigSlot, SignatureSuite, Timestamp, Traversal,
+    TriggerPredicate, TrustMarker, TwinFacts, VisibilityClass,
 };
 use unidpp_tier_a::{EcLevel, TierAPacker, TierAPayload};
 use unidpp_verdict::{Reading, VerdictBuilder};
@@ -44,6 +44,7 @@ fn ts(s: &str) -> Timestamp {
 fn eu_battery_profile() -> ProfileManifest {
     let p = ProfileManifest {
         id: ProfileId::new("urn:unidpp:profile:eu-battery-2023-1542").unwrap(),
+        issuer_class: IssuerClass::Law,
         axes: ProfileAxes::jurisdiction("EU").with_sector("batteries"),
         trigger: TriggerPredicate::Any,
         min_capability: CapabilityClass::LoggedContact,

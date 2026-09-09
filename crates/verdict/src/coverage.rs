@@ -56,14 +56,15 @@ impl CoverageReport {
 mod tests {
     use super::*;
     use unidpp_model::{
-        CapabilityClass, DataPointRef, FreshnessRequirement, Interval, ProfileAxes, ProfileId,
-        ProfileManifest, Resolution, SignatureSuite, Timestamp, Traversal, TriggerPredicate,
-        VisibilityClass,
+        CapabilityClass, DataPointRef, FreshnessRequirement, Interval, IssuerClass, ProfileAxes,
+        ProfileId, ProfileManifest, Resolution, SignatureSuite, Timestamp, Traversal,
+        TriggerPredicate, VisibilityClass,
     };
 
     fn profile() -> ProfileManifest {
         ProfileManifest {
             id: ProfileId::new("urn:unidpp:profile:test").unwrap(),
+            issuer_class: IssuerClass::Law,
             axes: ProfileAxes::jurisdiction("EU"),
             trigger: TriggerPredicate::Any,
             min_capability: CapabilityClass::Silent,

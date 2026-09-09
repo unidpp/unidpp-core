@@ -21,7 +21,7 @@ use unidpp_event::{
 };
 use unidpp_model::{
     CapabilityClass, DataPointRef, FactValue, FreshnessRequirement, InstallMethod, Interval,
-    Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
+    IssuerClass, Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId, ProfileManifest,
     Recoverability, Resolution, SigSlot, SignatureSuite, Timestamp, Traversal, TriggerPredicate,
     TrustMarker, TwinFacts, VisibilityClass,
 };
@@ -48,6 +48,7 @@ fn ts(s: &str) -> Timestamp {
 fn eu_profile() -> ProfileManifest {
     let p = ProfileManifest {
         id: ProfileId::new("urn:unidpp:profile:eu-espr-electronics").unwrap(),
+        issuer_class: IssuerClass::Law,
         axes: ProfileAxes::jurisdiction("EU").with_sector("electronics"),
         trigger: TriggerPredicate::Any,
         min_capability: CapabilityClass::Silent,
@@ -72,6 +73,7 @@ fn eu_profile() -> ProfileManifest {
 fn jp_profile() -> ProfileManifest {
     let p = ProfileManifest {
         id: ProfileId::new("urn:unidpp:profile:jp-meti-pse").unwrap(),
+        issuer_class: IssuerClass::Law,
         axes: ProfileAxes::jurisdiction("JP").with_sector("electronics"),
         trigger: TriggerPredicate::FactContains {
             path: "subject.markets".into(),

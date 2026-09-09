@@ -204,6 +204,119 @@ impl fmt::Display for DataPointRef {
     }
 }
 
+/// Who issued a profile — the load-bearing typology: the issuer
+/// class determines the profile's authority semantics and VERIFies
+/// the ceiling of any judgment under it (ARCHITECTURE §2): a
+/// manufacturer profile is never stronger than self-declared,
+/// however well signed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+pub enum IssuerClass {
+    /// A regulator acting on law — mandatory within its territory.
+    Law,
+    /// An intergovernmental body acting on treaty — recognized across
+    /// borders (e.g. OIML-CS).
+    Treaty,
+    /// A sector body/consortium — required by market practice.
+    Consensus,
+    /// The economic operator about its own product — self-asserted,
+    /// graded accordingly.
+    Declaration,
+    /// A certification body attesting third-party over someone
+    /// else's claims.
+    Attestation,
+}
+
+#[cfg(test)]
+mod issuer_class_tests {
+    use super::*;
+
+    #[test]
+    fn the_five_classes_round_trip_and_grade() {
+        for (class, grade) in [
+            (IssuerClass::Law, TrustGrade::Regulatory),
+            (IssuerClass::Treaty, TrustGrade::Regulatory),
+            (IssuerClass::Consensus, TrustGrade::MarketPractice),
+            (IssuerClass::Attestation, TrustGrade::ThirdParty),
+            (IssuerClass::Declaration, TrustGrade::SelfDeclared),
+        ] {
+            assert_eq!(IssuerClass::parse_token(class.token()).unwrap(), class);
+            assert_eq!(class.grade_ceiling(), grade);
+        }
+        assert!(IssuerClass::parse_token("royal-decree").is_err());
+        // Unclassified defaults to the weakest claim, never stronger.
+        assert_eq!(IssuerClass::default(), IssuerClass::Declaration);
+    }
+}
+
+impl Default for IssuerClass {
+    /// Unclassified grades as the issuer speaking for itself — the
+    /// weakest claim, never silently stronger.
+    fn default() -> IssuerClass {
+        IssuerClass::Declaration
+    }
+}
+
+impl IssuerClass {
+    /// Stable wire token.
+    pub fn token(self) -> &'static str {
+        match self {
+            IssuerClass::Law => "law",
+            IssuerClass::Treaty => "treaty",
+            IssuerClass::Consensus => "consensus",
+            IssuerClass::Declaration => "declaration",
+            IssuerClass::Attestation => "attestation",
+        }
+    }
+
+    pub fn parse_token(token: &str) -> Result<IssuerClass, ModelError> {
+        match token.trim().to_ascii_lowercase().as_str() {
+            "law" => Ok(IssuerClass::Law),
+            "treaty" => Ok(IssuerClass::Treaty),
+            "consensus" => Ok(IssuerClass::Consensus),
+            "declaration" => Ok(IssuerClass::Declaration),
+            "attestation" => Ok(IssuerClass::Attestation),
+            other => Err(ModelError::Parse(format!(
+                "unknown issuer class `{other}` (law | treaty | consensus | declaration | attestation)"
+            ))),
+        }
+    }
+
+    /// The verification ceiling for judgments under this class (I9's
+    /// grading follows the class, PR-1).
+    pub fn grade_ceiling(self) -> TrustGrade {
+        match self {
+            IssuerClass::Law | IssuerClass::Treaty => TrustGrade::Regulatory,
+            IssuerClass::Consensus => TrustGrade::MarketPractice,
+            IssuerClass::Attestation => TrustGrade::ThirdParty,
+            IssuerClass::Declaration => TrustGrade::SelfDeclared,
+        }
+    }
+}
+
+/// The graded authority a judgment can claim (never boolean).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum TrustGrade {
+    /// The issuer speaks for law or treaty.
+    Regulatory,
+    /// The issuer speaks for a market's practice.
+    MarketPractice,
+    /// The issuer attests over someone else's claims.
+    ThirdParty,
+    /// The issuer speaks only for itself.
+    SelfDeclared,
+}
+
+impl TrustGrade {
+    pub fn token(self) -> &'static str {
+        match self {
+            TrustGrade::Regulatory => "regulatory",
+            TrustGrade::MarketPractice => "market-practice",
+            TrustGrade::ThirdParty => "third-party",
+            TrustGrade::SelfDeclared => "self-declared",
+        }
+    }
+}
+
 /// A registered, versioned profile: the calibrated lens placed on the
 /// digital twin. The manifest binds the axes, the trigger predicate, the
 /// capability floor, data points, crypto suites, and the
@@ -211,6 +324,10 @@ impl fmt::Display for DataPointRef {
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ProfileManifest {
     pub id: ProfileId,
+    /// Who issued this profile (the authority-semantics typology;
+    /// grades every judgment under it).
+    #[serde(default)]
+    pub issuer_class: IssuerClass,
     pub axes: ProfileAxes,
     pub trigger: TriggerPredicate,
     pub min_capability: CapabilityClass,
@@ -284,6 +401,7 @@ mod tests {
     fn battery_profile() -> ProfileManifest {
         ProfileManifest {
             id: ProfileId::new("urn:unidpp:profile:eu-battery-v3").unwrap(),
+            issuer_class: IssuerClass::Law,
             axes: ProfileAxes::jurisdiction("EU").with_sector("Batteries"),
             trigger: TriggerPredicate::FactGe {
                 path: "battery.capacity-kwh".into(),

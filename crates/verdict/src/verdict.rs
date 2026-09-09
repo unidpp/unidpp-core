@@ -201,6 +201,8 @@ impl<'a> VerdictBuilder<'a> {
 
 #[cfg(test)]
 mod tests {
+    use unidpp_model::IssuerClass;
+
     use super::*;
     use unidpp_event::{EventPayload, EventType, TypedEvent};
     use unidpp_model::{
@@ -238,6 +240,7 @@ mod tests {
     fn profile() -> ProfileManifest {
         ProfileManifest {
             id: ProfileId::new("urn:unidpp:profile:test").unwrap(),
+            issuer_class: IssuerClass::Law,
             axes: ProfileAxes::jurisdiction("EU"),
             trigger: TriggerPredicate::Any,
             min_capability: CapabilityClass::Silent,

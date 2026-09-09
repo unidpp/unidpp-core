@@ -36,8 +36,8 @@ pub use link::{
     LinkType, Pairing, PassportLink, Recoverability, Visibility, VisibilityClass,
 };
 pub use profile::{
-    CapabilityClass, DataPointRef, FreshnessRequirement, ProfileAxes, ProfileManifest, Resolution,
-    Traversal,
+    CapabilityClass, DataPointRef, FreshnessRequirement, IssuerClass, ProfileAxes, ProfileManifest,
+    Resolution, Traversal, TrustGrade,
 };
 pub use time::{Interval, Timestamp};
 pub use trust::{SigSlot, SignatureSuite, TrustMarker};

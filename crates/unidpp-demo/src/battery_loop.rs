@@ -18,9 +18,9 @@ use unidpp_event::{
 };
 use unidpp_model::{
     CapabilityClass, DataPointRef, Decimal, FactValue, FreshnessRequirement, InstallMethod,
-    Interval, KnownMethod, Pairing, PassportId, ProductIdentifier, ProfileAxes, ProfileId,
-    ProfileManifest, Recoverability, Resolution, SigSlot, SignatureSuite, Timestamp, Traversal,
-    TriggerPredicate, TrustMarker, TwinFacts, VisibilityClass,
+    Interval, IssuerClass, KnownMethod, Pairing, PassportId, ProductIdentifier, ProfileAxes,
+    ProfileId, ProfileManifest, Recoverability, Resolution, SigSlot, SignatureSuite, Timestamp,
+    Traversal, TriggerPredicate, TrustMarker, TwinFacts, VisibilityClass,
 };
 use unidpp_tier_a::{EcLevel, TierAPacker, TierAPayload};
 use unidpp_transform::{
@@ -46,6 +46,7 @@ fn qty(amount: &str, uom: &str, reg: &UnitRegistry) -> Quantity {
 fn battery_profile() -> ProfileManifest {
     let p = ProfileManifest {
         id: ProfileId::new("urn:unidpp:profile:eu-battery-v3").unwrap(),
+        issuer_class: IssuerClass::Law,
         axes: ProfileAxes::jurisdiction("EU").with_sector("batteries"),
         trigger: TriggerPredicate::FactGe {
             path: "battery.capacity-kwh".into(),

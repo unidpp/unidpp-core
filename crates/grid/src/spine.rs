@@ -70,7 +70,7 @@ impl Spine {
                 .chunks(2)
                 .map(|pair| match pair {
                     [a] => hpair(a, a),
-                    [a, b] => hpair(a, b),
+                    [a, b] => hpair(&min_of(a, b), &max_of(a, b)),
                     _ => unreachable!(),
                 })
                 .collect();
@@ -120,12 +120,31 @@ fn merkle_root(leaves: &[[u8; 32]]) -> [u8; 32] {
             .chunks(2)
             .map(|pair| match pair {
                 [a] => hpair(a, a),
-                [a, b] => hpair(a, b),
+                // Order-insensitive pairing: the root must not depend
+                // on which leaf hashes higher — proofs recompute the
+                // same pairing from sibling hashes alone.
+                [a, b] => hpair(&min_of(a, b), &max_of(a, b)),
                 _ => unreachable!(),
             })
             .collect();
     }
     level[0]
+}
+
+fn min_of(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
+    if a <= b {
+        *a
+    } else {
+        *b
+    }
+}
+
+fn max_of(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
+    if a > b {
+        *a
+    } else {
+        *b
+    }
 }
 
 /// Inclusion proof: the sibling path from a segment's leaf to the
@@ -173,6 +192,19 @@ mod tests {
 
     #[test]
     fn proofs_validate_and_forges_fail() {
+        // Adversarial commitments where leaf order != hash order —
+        // pairing must be order-insensitive end to end (the G-GRID
+        // demo's real commitments caught the positional bug).
+        let hard = Spine::over(7, {
+            let mut m = BTreeMap::new();
+            m.insert("a".to_string(), [0xFF; 32]);
+            m.insert("b".to_string(), [0x00; 32]);
+            m
+        });
+        for id in ["a", "b"] {
+            let proof = hard.proof(id).expect("proof");
+            assert!(proof.verifies_against(&hard.root), "{id} adversarial");
+        }
         let spine = spine_of(
             &[("cn-static", c(1)), ("cn-dynamic", c(2)), ("eu", c(3))],
             4,

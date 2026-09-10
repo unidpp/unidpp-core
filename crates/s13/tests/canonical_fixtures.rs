@@ -74,7 +74,9 @@ fn vector_request() {
 #[test]
 fn vector_response() {
     let resp = S13Response::evaluate(&request(), &policy(), "weilian-shenzhen");
-    assert!(serde_json::to_string(&resp.outcome).unwrap().contains("attestation-offer"));
+    assert!(serde_json::to_string(&resp.outcome)
+        .unwrap()
+        .contains("attestation-offer"));
     check(
         "response.json",
         serde_json::json!({

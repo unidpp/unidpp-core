@@ -112,7 +112,9 @@ impl S13Outcome {
         match self {
             S13Outcome::Permit => vec![],
             S13Outcome::PermitPaired { paired_with } => vec![paired_with.as_bytes()],
-            S13Outcome::AttestationOffer { attestation_service } => {
+            S13Outcome::AttestationOffer {
+                attestation_service,
+            } => {
                 vec![attestation_service.as_bytes()]
             }
             S13Outcome::Escalation { escrow_quorum } => vec![escrow_quorum.as_bytes()],

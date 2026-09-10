@@ -231,9 +231,18 @@ mod tests {
     #[test]
     fn cross_domain_substitution_is_rejected() {
         let commitments: BTreeMap<String, [u8; 32]> = [
-            ("cn-static".to_string(), crate::segment::Segment::commit_state(b"a=1")),
-            ("cn-dynamic".to_string(), crate::segment::Segment::commit_state(b"b=2")),
-            ("eu".to_string(), crate::segment::Segment::commit_state(b"c=3")),
+            (
+                "cn-static".to_string(),
+                crate::segment::Segment::commit_state(b"a=1"),
+            ),
+            (
+                "cn-dynamic".to_string(),
+                crate::segment::Segment::commit_state(b"b=2"),
+            ),
+            (
+                "eu".to_string(),
+                crate::segment::Segment::commit_state(b"c=3"),
+            ),
         ]
         .into_iter()
         .collect();

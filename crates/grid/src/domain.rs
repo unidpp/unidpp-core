@@ -59,6 +59,9 @@ mod tests {
         let mut expect = SEGMENT_COMMITMENT.to_vec();
         expect.push(0);
         expect.extend_from_slice(&w.into_bytes());
-        assert_eq!(hash_in(SEGMENT_COMMITMENT, &[b"a", b"b"]), sha256(&[&expect]).0);
+        assert_eq!(
+            hash_in(SEGMENT_COMMITMENT, &[b"a", b"b"]),
+            sha256(&[&expect]).0
+        );
     }
 }

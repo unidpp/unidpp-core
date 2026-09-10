@@ -11,6 +11,7 @@
 //! domain-framed digest material (CN-1): a report can be signed,
 //! journaled, exchanged.
 
+use crate::route::VerificationRoute;
 use unidpp_model::{sha256, CanonicalWriter};
 
 /// The evidence kind backing one entry (XB-3's tiers).
@@ -37,7 +38,7 @@ impl EvidenceKind {
 }
 
 /// One data class's coverage.
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct CoverageEntry {
     /// The data class (the segment or element-set id).
     pub class: String,
@@ -68,6 +69,27 @@ pub struct CoverageReport {
     pub verified_at: String,
     /// One entry per data class, in class order.
     pub entries: Vec<CoverageEntry>,
+    /// The executed verification route — the report's replayable
+    /// trace (SI-11): re-running the recorded steps reproduces this
+    /// verdict byte-identically. Absent for reports built outside
+    /// the route pipeline.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub route: Option<VerificationRoute>,
+}
+
+impl CoverageEntry {
+    /// The entry's canonical encoding (CN-1) — shared by the report
+    /// body and the route trace that carries it (SI-11: one entry,
+    /// one encoding, wherever it travels).
+    pub fn write_canonical(&self, w: &mut CanonicalWriter) {
+        w.write_bytes(self.class.as_bytes());
+        w.write_bytes(self.element_set.as_bytes());
+        w.write_bytes(self.evidence.token().as_bytes());
+        w.write_bytes(self.governing_policy.as_bytes());
+        w.write_bytes(&self.governing_policy_version.to_le_bytes());
+        w.write_bytes(self.reading.as_bytes());
+        w.write_bytes(self.as_of.as_bytes());
+    }
 }
 
 impl CoverageReport {
@@ -78,6 +100,7 @@ impl CoverageReport {
             profile: profile.into(),
             verified_at: verified_at.into(),
             entries: Vec::new(),
+            route: None,
         }
     }
 
@@ -94,16 +117,15 @@ impl CoverageReport {
         w.write_bytes(self.subject.as_bytes());
         w.write_bytes(self.profile.as_bytes());
         w.write_bytes(self.verified_at.as_bytes());
+        let has_route = self.route.is_some() as u64;
+        w.write_bytes(&has_route.to_le_bytes());
+        if let Some(route) = &self.route {
+            w.write_bytes(&route.digest());
+        }
         let n = (self.entries.len() as u64).to_le_bytes();
         w.write_bytes(&n);
         for e in &self.entries {
-            w.write_bytes(e.class.as_bytes());
-            w.write_bytes(e.element_set.as_bytes());
-            w.write_bytes(e.evidence.token().as_bytes());
-            w.write_bytes(e.governing_policy.as_bytes());
-            w.write_bytes(&e.governing_policy_version.to_le_bytes());
-            w.write_bytes(e.reading.as_bytes());
-            w.write_bytes(e.as_of.as_bytes());
+            e.write_canonical(&mut w);
         }
         w.into_bytes()
     }

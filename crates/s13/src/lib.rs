@@ -17,6 +17,7 @@
 //! naming requirement starts here).
 
 pub mod coverage;
+pub mod route;
 
 use unidpp_grid::{PolicyObject, RevealClass};
 use unidpp_model::{sha256, CanonicalWriter};

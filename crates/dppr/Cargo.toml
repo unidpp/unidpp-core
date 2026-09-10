@@ -1,0 +1,11 @@
+[package]
+name = "unidpp-dppr"
+version.workspace = true
+edition.workspace = true
+description = "DPP-R: the client retrieval interface model (Part 10)"
+
+[dependencies]
+unidpp-grid = { path = "../grid" }
+unidpp-model = { path = "../model" }
+serde = { workspace = true }
+serde_json = { workspace = true }

@@ -8,6 +8,7 @@ members = [
     "crates/verdict",
     "crates/grid",
     "crates/s13",
+    "crates/dppr",
     "crates/unidpp-demo",
 ]
 

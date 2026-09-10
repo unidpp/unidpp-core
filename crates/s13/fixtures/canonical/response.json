@@ -1,0 +1,48 @@
+{
+  "canonical_hex": "20000000e2f2037c84dbc939f0b5423597a8cbb8286ce991511dcedc8263f9a107ee198b4b0000007b226f7574636f6d65223a226174746573746174696f6e2d6f66666572222c226174746573746174696f6e5f73657276696365223a22636e2d73616d722d6174746573746174696f6e227d0e000000636e2d64796e616d69632d626d73080000000100000000000000100000007765696c69616e2d7368656e7a68656e",
+  "family": "s13/response",
+  "response": {
+    "custodian": "weilian-shenzhen",
+    "governing_policy": "cn-dynamic-bms",
+    "governing_policy_version": 1,
+    "outcome": {
+      "attestation_service": "cn-samr-attestation",
+      "outcome": "attestation-offer"
+    },
+    "request_digest": [
+      226,
+      242,
+      3,
+      124,
+      132,
+      219,
+      201,
+      57,
+      240,
+      181,
+      66,
+      53,
+      151,
+      168,
+      203,
+      184,
+      40,
+      108,
+      233,
+      145,
+      81,
+      29,
+      206,
+      220,
+      130,
+      99,
+      249,
+      161,
+      7,
+      238,
+      25,
+      139
+    ]
+  },
+  "version": 1
+}

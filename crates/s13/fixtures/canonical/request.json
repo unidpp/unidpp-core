@@ -1,0 +1,13 @@
+{
+  "canonical_hex": "0700000064652d7a6f6c6c1d00000075726e3a756e696470703a70617373706f72743a7061636b2d303030311d00000075726e3a756e696470703a70726f66696c653a65752d626174746572790a000000636e2d64796e616d696314000000323033302d30362d30315430383a30303a30305a",
+  "digest_hex": "e2f2037c84dbc939f0b5423597a8cbb8286ce991511dcedc8263f9a107ee198b",
+  "family": "s13/request",
+  "request": {
+    "at": "2030-06-01T08:00:00Z",
+    "profile": "urn:unidpp:profile:eu-battery",
+    "segment": "cn-dynamic",
+    "subject": "urn:unidpp:passport:pack-0001",
+    "verifier": "de-zoll"
+  },
+  "version": 1
+}

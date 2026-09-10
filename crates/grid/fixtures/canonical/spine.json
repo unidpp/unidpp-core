@@ -1,0 +1,16 @@
+{
+  "commitments": {
+    "cn-dynamic": "d5bf881c202a17602a68833e355db1f67fbf2a67f52caa417cbba3c7abfcd8b1",
+    "eu-static": "293d66e8b3904e9d01fc3f86546f2f0e7ee79cf2bd207bde20eea0d48e16e569",
+    "owner-private": "2757710a5f763913438ca6e73fb5bbddd6515a8a58cd46e80e461e6d526cd12c"
+  },
+  "digest_hex": "5eb5e03dce4e992c06eff41c5473fb15aecc919282da935cd7eedac3daef3e91",
+  "domains": [
+    "UNIDPP-GRID/SPINE-LEAF",
+    "UNIDPP-GRID/SPINE-NODE",
+    "UNIDPP-GRID/SPINE-DIGEST"
+  ],
+  "family": "grid/spine",
+  "root_hex": "6af79670f03bd281ead8958fcbc743ed6dbc3e86b5371925e8d3203930471b17",
+  "version": 1
+}

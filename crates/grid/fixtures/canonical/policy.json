@@ -1,0 +1,28 @@
+{
+  "canonical_hex": "0e000000636e2d64796e616d69632d626d7308000000010000000000000007000000636e2d73616d720d0000006f726967696e2d7365616c656414000000323032372d30312d30315430303a30303a30305a0a000000636e2d637573746f6d7312000000636e2d637573746f6d731f64652d7a6f6c6c100000007765696c69616e2d7368656e7a68656e03000000736d32",
+  "digest_hex": "8774c435f8d53c29879fe5f0ea05ee7e2854f7845ce146220102413354512966",
+  "family": "grid/policy",
+  "policy": {
+    "authority": "cn-samr",
+    "policy_id": "cn-dynamic-bms",
+    "readers": [
+      "cn-customs"
+    ],
+    "reveal": "OriginSealed",
+    "suites": [
+      "sm2"
+    ],
+    "superseded_by": null,
+    "valid_from": "2027-01-01T00:00:00Z",
+    "valid_to": null,
+    "verifiers": [
+      "cn-customs",
+      "de-zoll"
+    ],
+    "version": 1,
+    "writers": [
+      "weilian-shenzhen"
+    ]
+  },
+  "version": 1
+}

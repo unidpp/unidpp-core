@@ -1,0 +1,7 @@
+{
+  "commitment_hex": "f46d425ef9bb0627c3f13028a824d0dd70f80022ef4d6df27a653eef3d361f77",
+  "domain": "UNIDPP-GRID/SEGMENT-COMMITMENT",
+  "family": "grid/segment-commitment",
+  "state_hex": "6379636c655f636f756e743d3431322c766f6c746167653d332e37312c74656d703d32382e34",
+  "version": 1
+}

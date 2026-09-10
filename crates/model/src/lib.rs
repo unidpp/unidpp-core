@@ -16,6 +16,7 @@
 //! the normalization table's lowercase form (`normalization` module).
 
 pub mod decimal;
+pub mod descriptor;
 pub mod digest;
 pub mod facts;
 pub mod identifier;
@@ -27,6 +28,10 @@ pub mod time;
 pub mod trust;
 
 pub use decimal::Decimal;
+pub use descriptor::{
+    ContentAxis, DerivationAxis, ExchangeAxis, GranularityAxis, ProjectionDescriptor, TemporalAxis,
+    BATTERY_FROZEN, SERVED_VIEW,
+};
 pub use digest::{sha256, CanonicalReader, CanonicalWriter, Hash};
 pub use facts::{FactValue, TriggerPredicate, TwinFacts};
 pub use identifier::{Granularity, IdScheme, ProductIdentifier};

@@ -16,6 +16,8 @@
 //! the response cites the governing policy id + version (XB-3's
 //! naming requirement starts here).
 
+pub mod coverage;
+
 use unidpp_grid::{PolicyObject, RevealClass};
 use unidpp_model::{sha256, CanonicalWriter};
 

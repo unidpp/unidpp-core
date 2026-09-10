@@ -4,6 +4,7 @@
 //! cargo test — the fixture diff IS the rule change.
 
 use unidpp_grid::{PolicyObject, RevealClass};
+use unidpp_s13::coverage::{CoverageReport, EvidenceKind};
 use unidpp_s13::{S13Request, S13Response};
 
 fn hex(b: &[u8]) -> String {
@@ -84,6 +85,44 @@ fn vector_response() {
             "family": "s13/response",
             "response": serde_json::to_value(&resp).unwrap(),
             "canonical_hex": hex(&resp.canonical_bytes()),
+        }),
+    );
+}
+
+#[test]
+fn vector_coverage_report() {
+    let mut report = CoverageReport::new(
+        "urn:unidpp:passport:pack-0001",
+        "urn:unidpp:profile:eu-battery",
+        "2030-06-01T08:30:00Z",
+    );
+    report.entry(unidpp_s13::coverage::CoverageEntry {
+        class: "eu-static".into(),
+        element_set: "urn:unidpp:elements:battery-static".into(),
+        evidence: EvidenceKind::VerifiedDirect,
+        governing_policy: "eu-static-open".into(),
+        governing_policy_version: 1,
+        reading: "conformant".into(),
+        as_of: "2030-06-01T08:30:00Z".into(),
+    });
+    report.entry(unidpp_s13::coverage::CoverageEntry {
+        class: "cn-dynamic".into(),
+        element_set: "urn:unidpp:elements:bms-dynamic".into(),
+        evidence: EvidenceKind::AttestedByAuthority,
+        governing_policy: "cn-dynamic-bms".into(),
+        governing_policy_version: 1,
+        reading: "pass".into(),
+        as_of: "2030-06-01T08:00:00Z".into(),
+    });
+    check(
+        "coverage-report.json",
+        serde_json::json!({
+            "version": 1,
+            "family": "s13/coverage-report",
+            "report": serde_json::to_value(&report).unwrap(),
+            "canonical_hex": hex(&report.canonical_bytes()),
+            "digest_hex": hex(&report.digest()),
+            "summary": report.summary(),
         }),
     );
 }

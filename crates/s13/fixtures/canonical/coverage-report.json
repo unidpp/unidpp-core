@@ -1,0 +1,32 @@
+{
+  "canonical_hex": "1d00000075726e3a756e696470703a70617373706f72743a7061636b2d303030311d00000075726e3a756e696470703a70726f66696c653a65752d6261747465727914000000323033302d30362d30315430383a33303a30305a0800000002000000000000000900000065752d7374617469632200000075726e3a756e696470703a656c656d656e74733a626174746572792d7374617469630f00000076657269666965642d6469726563740e00000065752d7374617469632d6f70656e0800000001000000000000000a000000636f6e666f726d616e7414000000323033302d30362d30315430383a33303a30305a0a000000636e2d64796e616d69631f00000075726e3a756e696470703a656c656d656e74733a626d732d64796e616d69631500000061747465737465642d62792d617574686f726974790e000000636e2d64796e616d69632d626d73080000000100000000000000040000007061737314000000323033302d30362d30315430383a30303a30305a",
+  "digest_hex": "c2aaaa94d9be77d74e25a1aca555c8b268c374094ba1af4de6eb2d9d062e25f6",
+  "family": "s13/coverage-report",
+  "report": {
+    "entries": [
+      {
+        "as_of": "2030-06-01T08:30:00Z",
+        "class": "eu-static",
+        "element_set": "urn:unidpp:elements:battery-static",
+        "evidence": "verified-direct",
+        "governing_policy": "eu-static-open",
+        "governing_policy_version": 1,
+        "reading": "conformant"
+      },
+      {
+        "as_of": "2030-06-01T08:00:00Z",
+        "class": "cn-dynamic",
+        "element_set": "urn:unidpp:elements:bms-dynamic",
+        "evidence": "attested-by-authority",
+        "governing_policy": "cn-dynamic-bms",
+        "governing_policy_version": 1,
+        "reading": "pass"
+      }
+    ],
+    "profile": "urn:unidpp:profile:eu-battery",
+    "subject": "urn:unidpp:passport:pack-0001",
+    "verified_at": "2030-06-01T08:30:00Z"
+  },
+  "summary": "urn:unidpp:passport:pack-0001 under urn:unidpp:profile:eu-battery at 2030-06-01T08:30:00Z: eu-static: verified-direct (governing policy eu-static-open v1) | cn-dynamic: attested-by-authority (governing policy cn-dynamic-bms v1)",
+  "version": 1
+}

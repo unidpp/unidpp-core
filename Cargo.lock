@@ -210,6 +210,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "unidpp-s13"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "unidpp-grid",
+ "unidpp-model",
+]
+
+[[package]]
 name = "unidpp-tier-a"
 version = "0.1.0"
 dependencies = [

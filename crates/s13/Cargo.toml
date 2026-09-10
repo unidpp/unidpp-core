@@ -1,0 +1,17 @@
+[package]
+name = "unidpp-s13"
+description = "The S13 seam: cross-border system-to-system choreography under segment policy (permit / deny / attestation offer / escalation)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+unidpp-model = { workspace = true }
+unidpp-grid = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

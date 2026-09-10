@@ -94,16 +94,50 @@ pub struct S13Response {
     pub custodian: String,
 }
 
+impl S13Outcome {
+    /// The stable wire token (also the serde tag).
+    pub fn token(&self) -> &'static str {
+        match self {
+            S13Outcome::Permit => "permit",
+            S13Outcome::PermitPaired { .. } => "permit-paired",
+            S13Outcome::AttestationOffer { .. } => "attestation-offer",
+            S13Outcome::Escalation { .. } => "escalation",
+            S13Outcome::Deny { .. } => "deny",
+        }
+    }
+
+    /// The variant's payload fields, in declaration order (empty for
+    /// the bare Permit) — canonical encoding never rides serde.
+    fn payload(&self) -> Vec<&[u8]> {
+        match self {
+            S13Outcome::Permit => vec![],
+            S13Outcome::PermitPaired { paired_with } => vec![paired_with.as_bytes()],
+            S13Outcome::AttestationOffer { attestation_service } => {
+                vec![attestation_service.as_bytes()]
+            }
+            S13Outcome::Escalation { escrow_quorum } => vec![escrow_quorum.as_bytes()],
+            S13Outcome::Deny { reason } => vec![reason.as_bytes()],
+        }
+    }
+}
+
 impl S13Response {
+    /// The canonical form: request digest, outcome token, outcome
+    /// payload fields, governing policy, custodian — all
+    /// length-prefixed (CN-1: structural, never a serde artifact).
     pub fn canonical_bytes(&self) -> Vec<u8> {
-        let outcome = serde_json::to_string(&self.outcome).unwrap_or_default();
-        canonical_fields(&[
-            &self.request_digest,
-            outcome.as_bytes(),
-            self.governing_policy.as_bytes(),
-            &self.governing_policy_version.to_le_bytes(),
-            self.custodian.as_bytes(),
-        ])
+        let mut parts: Vec<Vec<u8>> = vec![
+            self.request_digest.to_vec(),
+            self.outcome.token().as_bytes().to_vec(),
+        ];
+        for f in self.outcome.payload() {
+            parts.push(f.to_vec());
+        }
+        parts.push(self.governing_policy.as_bytes().to_vec());
+        parts.push(self.governing_policy_version.to_le_bytes().to_vec());
+        parts.push(self.custodian.as_bytes().to_vec());
+        let refs: Vec<&[u8]> = parts.iter().map(|p| p.as_slice()).collect();
+        canonical_fields(&refs)
     }
 
     /// The policy evaluation (XB-1's core mapping: reveal class →

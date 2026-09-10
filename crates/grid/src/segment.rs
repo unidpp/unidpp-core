@@ -2,7 +2,6 @@
 //! DPP (SG-1).
 
 use crate::policy::{PolicyObject, PolicyRef, PolicyVerdict};
-use unidpp_model::sha256;
 
 /// A segment: the sealed state commitment plus the policy that
 /// governs it. The plaintext lives with the custodian; the grid sees
@@ -15,8 +14,9 @@ pub struct Segment {
     pub subject: String,
     /// The governing policy, pinned at a version.
     pub policy: PolicyRef,
-    /// sha256 over the segment's sealed state (canonical event-log
-    /// prefix bytes; the hash IS the interface — no facts here).
+    /// The sealed-state commitment (canonical event-log prefix
+    /// bytes hashed in the SEGMENT-COMMITMENT domain; the hash IS
+    /// the interface — no facts here).
     pub state_commitment: [u8; 32],
     /// Monotone; commitment n+1 must extend commitment n (the spine's
     /// growth property rides this).
@@ -26,7 +26,7 @@ pub struct Segment {
 impl Segment {
     /// Commit over the custodian's canonical state bytes.
     pub fn commit_state(state_bytes: &[u8]) -> [u8; 32] {
-        sha256(&[state_bytes]).0
+        crate::domain::hash_in(crate::domain::SEGMENT_COMMITMENT, &[state_bytes])
     }
 
     /// Policy freshness for THIS segment against the live policy

@@ -4,14 +4,14 @@
 
 use std::collections::BTreeMap;
 
-use unidpp_model::sha256;
+use crate::domain::{hash_in, SPINE_DIGEST, SPINE_LEAF, SPINE_NODE};
 
 fn hpair(l: &[u8; 32], r: &[u8; 32]) -> [u8; 32] {
-    sha256(&[l, r]).0
+    hash_in(SPINE_NODE, &[l, r])
 }
 
 fn leaf_hash(segment_id: &str, commitment: &[u8; 32]) -> [u8; 32] {
-    sha256(&[segment_id.as_bytes(), commitment]).0
+    hash_in(SPINE_LEAF, &[segment_id.as_bytes(), commitment])
 }
 
 /// The spine over a segment set: the map of segment ids to their
@@ -106,7 +106,7 @@ impl Spine {
             buf.extend_from_slice(id.as_bytes());
             buf.extend_from_slice(c);
         }
-        sha256(&[&buf]).0
+        hash_in(SPINE_DIGEST, &[&buf])
     }
 }
 
@@ -221,6 +221,47 @@ mod tests {
         let mut spliced = spine.proof("eu").unwrap();
         spliced.siblings[0] = c(98);
         assert!(!spliced.verifies_against(&spine.root));
+    }
+
+    // CN-3's verify: a segment commitment — a value derived in the
+    // SEGMENT-COMMITMENT domain — replayed as a spine input (a
+    // sibling node hash, or a leaf hash presented as a commitment)
+    // is rejected. The domains are disjoint by construction; the
+    // proof arithmetic confirms it end to end.
+    #[test]
+    fn cross_domain_substitution_is_rejected() {
+        let commitments: BTreeMap<String, [u8; 32]> = [
+            ("cn-static".to_string(), crate::segment::Segment::commit_state(b"a=1")),
+            ("cn-dynamic".to_string(), crate::segment::Segment::commit_state(b"b=2")),
+            ("eu".to_string(), crate::segment::Segment::commit_state(b"c=3")),
+        ]
+        .into_iter()
+        .collect();
+        let spine = Spine::over(4, commitments);
+
+        // A commitment spliced in where a sibling NODE hash belongs.
+        let eu_commitment = spine.commitments["eu"];
+        let mut replayed = spine.proof("eu").unwrap();
+        replayed.siblings[0] = eu_commitment;
+        assert!(!replayed.verifies_against(&spine.root));
+
+        // A leaf-hash value presented as a commitment (the reverse
+        // replay): recompute eu's leaf hash and claim it as state.
+        let leaf_eu = crate::domain::hash_in(
+            crate::domain::SPINE_LEAF,
+            &[b"eu", &spine.commitments["eu"]],
+        );
+        let mut reverse = spine.proof("eu").unwrap();
+        reverse.commitment = leaf_eu;
+        assert!(!reverse.verifies_against(&spine.root));
+
+        // Distinctness, stated: no commitment equals any leaf hash,
+        // and the spine digest is not the root.
+        for (id, c) in &spine.commitments {
+            let leaf = crate::domain::hash_in(crate::domain::SPINE_LEAF, &[id.as_bytes(), c]);
+            assert_ne!(*c, leaf, "{id}");
+        }
+        assert_ne!(spine.digest(), spine.root);
     }
 
     #[test]

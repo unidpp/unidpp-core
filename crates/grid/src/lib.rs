@@ -20,10 +20,12 @@
 //! deployment-level sovereignty story (profiles, egress) is
 //! unidpp-config's — different layer, different crate, one doctrine.
 
+pub mod domain;
 pub mod policy;
 pub mod segment;
 pub mod spine;
 
+pub use domain::hash_in;
 pub use policy::{PolicyObject, PolicyRef, PolicyVerdict, RevealClass};
 pub use segment::Segment;
 pub use spine::{Spine, SpineProof};

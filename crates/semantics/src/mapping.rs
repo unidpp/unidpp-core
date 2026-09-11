@@ -170,28 +170,26 @@ impl MappingChain {
             residual: self.residual,
             scope: self.scope,
         };
-        match &next.kind {
-            MappingKind::Correspondence {
-                scope, residual, ..
-            } => {
-                chain.residual.push(residual.clone());
-                let common: Vec<String> = chain
-                    .scope
-                    .iter()
-                    .filter(|s| scope.contains(s))
-                    .cloned()
-                    .collect();
-                chain.scope = if chain.scope.is_empty() || scope.is_empty() {
-                    if chain.scope.is_empty() {
-                        scope.clone()
-                    } else {
-                        chain.scope
-                    }
+        if let MappingKind::Correspondence {
+            scope, residual, ..
+        } = &next.kind
+        {
+            chain.residual.push(residual.clone());
+            let common: Vec<String> = chain
+                .scope
+                .iter()
+                .filter(|s| scope.contains(s))
+                .cloned()
+                .collect();
+            chain.scope = if chain.scope.is_empty() || scope.is_empty() {
+                if chain.scope.is_empty() {
+                    scope.clone()
                 } else {
-                    common
-                };
-            }
-            _ => {}
+                    chain.scope
+                }
+            } else {
+                common
+            };
         }
         chain.hops.push(next);
         Ok(chain)

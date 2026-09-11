@@ -182,6 +182,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "unidpp-dppr"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "unidpp-grid",
+ "unidpp-model",
+]
+
+[[package]]
 name = "unidpp-event"
 version = "0.1.0"
 dependencies = [
@@ -216,6 +226,15 @@ dependencies = [
  "serde",
  "serde_json",
  "unidpp-grid",
+ "unidpp-model",
+]
+
+[[package]]
+name = "unidpp-semantics"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
  "unidpp-model",
 ]
 

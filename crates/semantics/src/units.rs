@@ -108,10 +108,9 @@ pub fn intake(
         .get(kind)
         .ok_or_else(|| UnitsError(format!("unknown quantity kind `{kind}`")))?;
     let uncertainty = uncertainty.ok_or_else(|| {
-        UnitsError(format!(
-            "measured values carry GUM uncertainty — a derived value without uncertainty \
-             is refused"
-        ))
+        UnitsError(
+            "measured values carry GUM uncertainty — a derived value without uncertainty is refused".into(),
+        )
     })?;
     if &offered.unit == canonical {
         return Ok(MeasuredValue {

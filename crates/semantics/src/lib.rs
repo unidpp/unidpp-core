@@ -2,10 +2,14 @@
 //! units and measurement, multilingual values, and parseable
 //! exports — the registry's model core.
 
+pub mod exports;
 pub mod mapping;
+pub mod multilingual;
 pub mod units;
 
+pub use exports::{ExportItem, StableId};
 pub use mapping::{MappingChain, MappingError, MappingItem, MappingKind};
+pub use multilingual::{validate, LocalizedSet, LocalizedValue};
 pub use units::{
     classify_upper, convert, intake, propagate, DecisionRule, MeasuredValue, OfferedValue,
     UnitTable, UnitsError,

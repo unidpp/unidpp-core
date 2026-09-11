@@ -9,6 +9,7 @@ members = [
     "crates/grid",
     "crates/s13",
     "crates/dppr",
+    "crates/semantics",
     "crates/unidpp-demo",
 ]
 

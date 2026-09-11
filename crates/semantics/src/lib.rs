@@ -3,8 +3,10 @@
 //! exports — the registry's model core.
 
 pub mod exports;
+pub mod federation;
 pub mod mapping;
 pub mod multilingual;
+pub mod resolution;
 pub mod units;
 
 pub use exports::{ExportItem, StableId};

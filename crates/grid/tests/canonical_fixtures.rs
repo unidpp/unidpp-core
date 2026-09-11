@@ -100,7 +100,7 @@ fn vector_spine_root_and_digest() {
     check(
         "spine.json",
         serde_json::json!({
-            "version": 1,
+            "version": spine.version,
             "family": "grid/spine",
             "domains": ["UNIDPP-GRID/SPINE-LEAF", "UNIDPP-GRID/SPINE-NODE", "UNIDPP-GRID/SPINE-DIGEST"],
             "commitments": commitment_map,

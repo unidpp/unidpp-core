@@ -1,0 +1,67 @@
+{
+  "chain": {
+    "hops": [
+      {
+        "kind": {
+          "tier": "deterministic",
+          "transform": "urn:unidpp:transform:eu-cn-mass@4"
+        },
+        "source": "urn:unidpp:elements:eu-battery@3",
+        "target": "urn:unidpp:elements:cn-battery@2",
+        "version": 1
+      },
+      {
+        "kind": {
+          "tier": "deterministic",
+          "transform": "urn:unidpp:transform:cn-jp-mass@1"
+        },
+        "source": "urn:unidpp:elements:cn-battery@2",
+        "target": "urn:unidpp:elements:jp-battery@1",
+        "version": 2
+      }
+    ],
+    "residual": [],
+    "scope": [],
+    "source": "urn:unidpp:elements:eu-battery@3",
+    "target": "urn:unidpp:elements:jp-battery@1"
+  },
+  "chain_versions": [
+    [
+      "urn:unidpp:elements:eu-battery@3→urn:unidpp:elements:cn-battery@2",
+      1
+    ],
+    [
+      "urn:unidpp:elements:cn-battery@2→urn:unidpp:elements:jp-battery@1",
+      2
+    ]
+  ],
+  "correspondence": {
+    "kind": {
+      "attester": "jp-meti",
+      "residual": "recycled-content shares are not covered",
+      "scope": [
+        "carbon-footprint",
+        "recycled-content"
+      ],
+      "tier": "correspondence"
+    },
+    "source": "urn:unidpp:elements:eu-battery@3",
+    "target": "urn:unidpp:elements:us-battery@1",
+    "version": 1
+  },
+  "correspondence_canonical_hex": "2000000075726e3a756e696470703a656c656d656e74733a65752d6261747465727940332000000075726e3a756e696470703a656c656d656e74733a75732d62617474657279403108000000010000000000000006000000746965722d3210000000636172626f6e2d666f6f747072696e741000000072656379636c65642d636f6e74656e742700000072656379636c65642d636f6e74656e742073686172657320617265206e6f7420636f7665726564070000006a702d6d657469",
+  "divergence": {
+    "kind": {
+      "note": "divergent legal bases recorded, not reconciled",
+      "tier": "no-mapping"
+    },
+    "source": "urn:unidpp:elements:eu-battery@3",
+    "target": "urn:unidpp:elements:kr-battery@1",
+    "version": 1
+  },
+  "divergence_canonical_hex": "2000000075726e3a756e696470703a656c656d656e74733a65752d6261747465727940332000000075726e3a756e696470703a656c656d656e74733a6b722d62617474657279403108000000010000000000000006000000746965722d332e000000646976657267656e74206c6567616c206261736573207265636f726465642c206e6f74207265636f6e63696c6564",
+  "family": "semantics/mapping-chain",
+  "hop_a_canonical_hex": "2000000075726e3a756e696470703a656c656d656e74733a65752d6261747465727940332000000075726e3a756e696470703a656c656d656e74733a636e2d62617474657279403208000000010000000000000006000000746965722d312100000075726e3a756e696470703a7472616e73666f726d3a65752d636e2d6d6173734034",
+  "hop_b_canonical_hex": "2000000075726e3a756e696470703a656c656d656e74733a636e2d6261747465727940322000000075726e3a756e696470703a656c656d656e74733a6a702d62617474657279403108000000020000000000000006000000746965722d312100000075726e3a756e696470703a7472616e73666f726d3a636e2d6a702d6d6173734031",
+  "version": 1
+}

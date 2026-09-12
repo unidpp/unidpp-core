@@ -6,6 +6,7 @@ pub mod exports;
 pub mod federation;
 pub mod mapping;
 pub mod multilingual;
+pub mod onboarding;
 pub mod resolution;
 pub mod roles;
 pub mod units;

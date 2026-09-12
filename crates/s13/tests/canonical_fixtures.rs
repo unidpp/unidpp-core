@@ -5,6 +5,7 @@
 
 use unidpp_grid::{PolicyObject, RevealClass};
 use unidpp_s13::coverage::{CoverageReport, EvidenceKind};
+use unidpp_s13::route::{RouteStep, VerificationRoute};
 use unidpp_s13::{S13Request, S13Response};
 
 fn hex(b: &[u8]) -> String {
@@ -123,6 +124,73 @@ fn vector_coverage_report() {
             "canonical_hex": hex(&report.canonical_bytes()),
             "digest_hex": hex(&report.digest()),
             "summary": report.summary(),
+        }),
+    );
+}
+
+#[test]
+fn vector_verification_route() {
+    // The route exercises every step kind; its Classify steps carry
+    // the same two entries as the coverage-report fixture, so the
+    // replay re-derives that report from the trace alone.
+    let mut route = VerificationRoute::new();
+    route.step(RouteStep::Resolve {
+        subject: "urn:unidpp:passport:pack-0001".into(),
+    });
+    route.step(RouteStep::Transport {
+        mode: "document".into(),
+        counterpart: "de-zoll".into(),
+    });
+    route.step(RouteStep::Document {
+        kind: "frozen-view".into(),
+        digest: [7u8; 32],
+    });
+    route.step(RouteStep::Substitution {
+        data_class: "cn-dynamic".into(),
+        service: "cn-attestation-service".into(),
+    });
+    route.step(RouteStep::Classify {
+        entry: unidpp_s13::coverage::CoverageEntry {
+            class: "eu-static".into(),
+            element_set: "urn:unidpp:elements:battery-static".into(),
+            evidence: EvidenceKind::VerifiedDirect,
+            governing_policy: "eu-static-open".into(),
+            governing_policy_version: 1,
+            reading: "conformant".into(),
+            as_of: "2030-06-01T08:30:00Z".into(),
+        },
+    });
+    route.step(RouteStep::Classify {
+        entry: unidpp_s13::coverage::CoverageEntry {
+            class: "cn-dynamic".into(),
+            element_set: "urn:unidpp:elements:bms-dynamic".into(),
+            evidence: EvidenceKind::AttestedByAuthority,
+            governing_policy: "cn-dynamic-bms".into(),
+            governing_policy_version: 1,
+            reading: "pass".into(),
+            as_of: "2030-06-01T08:00:00Z".into(),
+        },
+    });
+    route.step(RouteStep::Gap {
+        data_class: "jp-safety".into(),
+        reason: "declaration refusal: no willingness for jp-safety".into(),
+    });
+    // The replay contract: Classify steps re-derive the coverage
+    // report's entries, byte-identically.
+    let replayed = route.replay(
+        "urn:unidpp:passport:pack-0001",
+        "urn:unidpp:profile:eu-battery",
+        "2030-06-01T08:30:00Z",
+    );
+    assert_eq!(replayed.entries.len(), 2);
+    check(
+        "verification-route.json",
+        serde_json::json!({
+            "version": 1,
+            "family": "s13/verification-route",
+            "route": serde_json::to_value(&route).unwrap(),
+            "canonical_hex": hex(&route.canonical_bytes()),
+            "digest_hex": hex(&route.digest()),
         }),
     );
 }

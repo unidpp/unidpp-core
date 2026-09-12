@@ -1,0 +1,91 @@
+{
+  "canonical_hex": "080000000700000000000000070000007265736f6c76651d00000075726e3a756e696470703a70617373706f72743a7061636b2d30303031090000007472616e73706f727408000000646f63756d656e740700000064652d7a6f6c6c08000000646f63756d656e740b00000066726f7a656e2d766965772000000007070707070707070707070707070707070707070707070707070707070707070c000000737562737469747574696f6e0a000000636e2d64796e616d696316000000636e2d6174746573746174696f6e2d7365727669636508000000636c6173736966790900000065752d7374617469632200000075726e3a756e696470703a656c656d656e74733a626174746572792d7374617469630f00000076657269666965642d6469726563740e00000065752d7374617469632d6f70656e0800000001000000000000000a000000636f6e666f726d616e7414000000323033302d30362d30315430383a33303a30305a08000000636c6173736966790a000000636e2d64796e616d69631f00000075726e3a756e696470703a656c656d656e74733a626d732d64796e616d69631500000061747465737465642d62792d617574686f726974790e000000636e2d64796e616d69632d626d73080000000100000000000000040000007061737314000000323033302d30362d30315430383a30303a30305a03000000676170090000006a702d736166657479310000006465636c61726174696f6e207265667573616c3a206e6f2077696c6c696e676e65737320666f72206a702d736166657479",
+  "digest_hex": "4ac3b495cfea7a2bb04f15812a04f479fcbe65bd77d8807125a264a7a50a63c6",
+  "family": "s13/verification-route",
+  "route": {
+    "steps": [
+      {
+        "step": "resolve",
+        "subject": "urn:unidpp:passport:pack-0001"
+      },
+      {
+        "counterpart": "de-zoll",
+        "mode": "document",
+        "step": "transport"
+      },
+      {
+        "digest": [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ],
+        "kind": "frozen-view",
+        "step": "document"
+      },
+      {
+        "data_class": "cn-dynamic",
+        "service": "cn-attestation-service",
+        "step": "substitution"
+      },
+      {
+        "entry": {
+          "as_of": "2030-06-01T08:30:00Z",
+          "class": "eu-static",
+          "element_set": "urn:unidpp:elements:battery-static",
+          "evidence": "verified-direct",
+          "governing_policy": "eu-static-open",
+          "governing_policy_version": 1,
+          "reading": "conformant"
+        },
+        "step": "classify"
+      },
+      {
+        "entry": {
+          "as_of": "2030-06-01T08:00:00Z",
+          "class": "cn-dynamic",
+          "element_set": "urn:unidpp:elements:bms-dynamic",
+          "evidence": "attested-by-authority",
+          "governing_policy": "cn-dynamic-bms",
+          "governing_policy_version": 1,
+          "reading": "pass"
+        },
+        "step": "classify"
+      },
+      {
+        "data_class": "jp-safety",
+        "reason": "declaration refusal: no willingness for jp-safety",
+        "step": "gap"
+      }
+    ]
+  },
+  "version": 1
+}

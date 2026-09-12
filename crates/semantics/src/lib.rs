@@ -4,6 +4,7 @@
 
 pub mod exports;
 pub mod federation;
+pub mod lifecycle;
 pub mod mapping;
 pub mod multilingual;
 pub mod onboarding;

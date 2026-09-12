@@ -5,6 +5,7 @@ edition.workspace = true
 description = "The semantic layer: mapping tiers and composition, units and measurement, multilingual values, parseable exports"
 
 [dependencies]
+unidpp-grid = { path = "../grid" }
 unidpp-model = { path = "../model" }
 serde = { workspace = true }
 serde_json = { workspace = true }

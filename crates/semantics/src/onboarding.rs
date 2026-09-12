@@ -13,7 +13,7 @@
 use crate::exports::StableId;
 use crate::federation::ExchangeItem;
 use crate::federation::Mirror;
-use crate::roles::{Action, FederationTier, Role, RoleCredential};
+use crate::roles::{Action, FederationTier, RoleCredential};
 
 /// The seed bundle: everything a new operator bootstraps from — the
 /// anchors to pin, the root descriptors to seed, and the role

@@ -7,6 +7,7 @@ pub mod federation;
 pub mod mapping;
 pub mod multilingual;
 pub mod resolution;
+pub mod roles;
 pub mod units;
 
 pub use exports::{ExportItem, StableId};

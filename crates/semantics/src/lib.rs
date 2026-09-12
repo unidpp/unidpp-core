@@ -8,6 +8,7 @@ pub mod lifecycle;
 pub mod mapping;
 pub mod multilingual;
 pub mod onboarding;
+pub mod productness;
 pub mod resolution;
 pub mod roles;
 pub mod units;

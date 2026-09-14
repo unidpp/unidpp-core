@@ -15,6 +15,7 @@
 //! stated, never silent. Both messages are signed in the S13 domain;
 //! the response cites the governing policy id + version (XB-3's
 //! naming requirement starts here).
+#![warn(missing_docs)]
 
 pub mod coverage;
 pub mod route;
@@ -47,6 +48,9 @@ pub struct S13Request {
 }
 
 impl S13Request {
+    /// The canonical, signable form (CN-1): the five fields in
+    /// declared order, each length-prefixed — what both sides and
+    /// any foreign implementation derive identically.
     pub fn canonical_bytes(&self) -> Vec<u8> {
         canonical_fields(&[
             self.verifier.as_bytes(),
@@ -57,6 +61,8 @@ impl S13Request {
         ])
     }
 
+    /// sha256 of the canonical bytes — the request's identity, which
+    /// the response cites as its binding.
     pub fn digest(&self) -> [u8; 32] {
         sha256(&[&self.canonical_bytes()]).0
     }
@@ -69,7 +75,10 @@ pub enum S13Outcome {
     /// The segment is served (reveal: open).
     Permit,
     /// The segment is served to the named paired verifier only.
-    PermitPaired { paired_with: String },
+    PermitPaired {
+        /// The only verifier the segment is served to.
+        paired_with: String,
+    },
     /// The class is sealed: an attestation ABOUT it is offered (XB-2).
     AttestationOffer {
         /// The attestation service that signs substitutions.
@@ -81,7 +90,10 @@ pub enum S13Outcome {
         escrow_quorum: String,
     },
     /// No governing policy admits this verifier, or an explicit deny.
-    Deny { reason: String },
+    Deny {
+        /// Why (the policy's own words, stated never silent).
+        reason: String,
+    },
 }
 
 /// The custodian's signed answer. Cites the governing policy.
@@ -89,9 +101,12 @@ pub enum S13Outcome {
 pub struct S13Response {
     /// sha256 of the request this answers (binding).
     pub request_digest: [u8; 32],
+    /// What the policy evaluation concluded (the four outcomes of
+    /// the seam plus denial).
     pub outcome: S13Outcome,
-    /// The governing policy (id + version) — XB-3 names it.
+    /// The governing policy's identifier — XB-3 names it.
     pub governing_policy: String,
+    /// The governing policy's version.
     pub governing_policy_version: u64,
     /// The answering custodian.
     pub custodian: String,

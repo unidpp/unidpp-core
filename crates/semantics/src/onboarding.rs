@@ -81,6 +81,7 @@ pub enum Gate {
 }
 
 impl Gate {
+    /// The gate's wire token.
     pub fn token(self) -> &'static str {
         match self {
             Gate::Jurisdiction => "jurisdiction",
@@ -171,6 +172,7 @@ pub enum ConformanceItem {
 }
 
 impl ConformanceItem {
+    /// The gate's wire token.
     pub fn token(self) -> &'static str {
         match self {
             ConformanceItem::ItemLifecycle => "item-lifecycle",
@@ -247,6 +249,8 @@ pub fn federate_peers(a_items: Vec<ExchangeItem>, b_items: Vec<ExchangeItem>) ->
 }
 
 /// A well-formed seed item for tests and the quickstart.
+/// A seeded exchange item (test/bundle convenience: a leaf with no
+/// payload hash).
 pub fn seed_item(register: &str, item: &str, version: u64) -> ExchangeItem {
     ExchangeItem {
         id: StableId {

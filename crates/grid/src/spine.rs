@@ -22,7 +22,9 @@ fn leaf_hash(segment_id: &str, commitment: &[u8; 32]) -> [u8; 32] {
 pub struct Spine {
     /// Monotone spine version (each publication increments).
     pub version: u64,
+    /// Each segment's state commitment (the leaves).
     pub commitments: BTreeMap<String, [u8; 32]>,
+    /// The Merkle root over the commitments.
     pub root: [u8; 32],
 }
 
@@ -152,9 +154,13 @@ fn max_of(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
 /// openable about any other segment.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct SpineProof {
+    /// The segment whose inclusion is proved.
     pub segment_id: String,
+    /// The segment's commitment (the leaf).
     pub commitment: [u8; 32],
+    /// The spine root the path proves against.
     pub root: [u8; 32],
+    /// The sibling path (leaf to root).
     pub siblings: Vec<[u8; 32]>,
 }
 

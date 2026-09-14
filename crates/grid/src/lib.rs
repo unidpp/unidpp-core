@@ -19,6 +19,7 @@
 //! (unidpp-signatif's grid seam, over these canonical bytes); the
 //! deployment-level sovereignty story (profiles, egress) is
 //! unidpp-config's — different layer, different crate, one doctrine.
+#![warn(missing_docs)]
 
 pub mod domain;
 pub mod policy;

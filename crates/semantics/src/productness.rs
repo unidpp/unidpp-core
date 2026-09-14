@@ -34,6 +34,7 @@ pub struct ProductnessLedger {
 }
 
 impl ProductnessLedger {
+    /// An empty ledger.
     pub fn new() -> ProductnessLedger {
         ProductnessLedger::default()
     }

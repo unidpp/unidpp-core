@@ -117,6 +117,7 @@ pub struct LocalizedSet {
 }
 
 impl LocalizedSet {
+    /// A set with no localizations.
     pub fn new() -> LocalizedSet {
         LocalizedSet::default()
     }

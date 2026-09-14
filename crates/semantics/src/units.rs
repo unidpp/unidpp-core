@@ -213,6 +213,7 @@ pub enum DecisionRule {
 }
 
 impl DecisionRule {
+    /// The rule's wire token (ILAC-G8's named rules).
     pub fn token(&self) -> &'static str {
         match self {
             DecisionRule::SharedRisk => "shared-risk",

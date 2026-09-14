@@ -9,6 +9,7 @@ use crate::policy::{PolicyObject, PolicyRef, PolicyVerdict};
 /// from any other segment (SG-1's verify condition).
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Segment {
+    /// The segment's identifier (its name within the subject).
     pub segment_id: String,
     /// The subject (passport/thing id) this segment belongs to.
     pub subject: String,

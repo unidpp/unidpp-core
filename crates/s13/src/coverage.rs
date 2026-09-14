@@ -28,6 +28,8 @@ pub enum EvidenceKind {
 }
 
 impl EvidenceKind {
+    /// The wire token of the evidence kind (the canonical encoding's
+    /// value — kebab-case, shared by the route trace and the report).
     pub fn token(self) -> &'static str {
         match self {
             EvidenceKind::VerifiedDirect => "verified-direct",

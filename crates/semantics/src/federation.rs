@@ -38,6 +38,7 @@ pub struct Mirror {
 }
 
 impl Mirror {
+    /// An empty mirror.
     pub fn new() -> Mirror {
         Mirror::default()
     }

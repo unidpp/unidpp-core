@@ -29,6 +29,7 @@ pub enum RevealClass {
 }
 
 impl RevealClass {
+    /// The wire token (the canonical encoding's value).
     pub fn token(self) -> &'static str {
         match self {
             RevealClass::Open => "open",
@@ -42,7 +43,9 @@ impl RevealClass {
 /// A versioned reference to a policy object (what a segment pins).
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct PolicyRef {
+    /// The referenced policy's identifier.
     pub policy_id: String,
+    /// The referenced policy's version.
     pub version: u64,
 }
 
@@ -51,23 +54,30 @@ pub struct PolicyRef {
 /// rides signatif's grid seam over [`PolicyObject::canonical_bytes`]).
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PolicyObject {
+    /// The policy's identifier.
     pub policy_id: String,
+    /// The policy's version (supersession bumps it).
     pub version: u64,
     /// The segment authority (trust-graph node id).
     pub authority: String,
     /// Node ids permitted each action (read/verify see the segment's
     /// contents; write may extend it — custody of its keys follows
     /// the authority's chain, not this list).
+    /// Node ids permitted to read the segment's contents.
     pub readers: Vec<String>,
+    /// Node ids permitted to verify (request under S13).
     pub verifiers: Vec<String>,
+    /// Node ids permitted to append to the segment.
     pub writers: Vec<String>,
+    /// The reveal class governing foreign access.
     pub reveal: RevealClass,
     /// The suites this segment's signatures accept (agility is a
     /// policy property, TR-6's substrate).
     pub suites: Vec<String>,
-    /// Effective window (RFC 3339), matching the event model's
-    /// interval convention.
+    /// Effective window start (RFC 3339), matching the event
+    /// model's interval convention.
     pub valid_from: String,
+    /// Effective window end (absent: open-ended).
     pub valid_to: Option<String>,
     /// Set when this policy has been superseded (SG-2: stale policy
     /// references are detectable at verification).
@@ -137,17 +147,34 @@ impl PolicyObject {
 /// What a policy check concluded — graded, never boolean (I9).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PolicyVerdict {
+    /// The referenced version is the current one.
     Current,
-    Stale { have: u64, current: u64 },
-    VersionDrift { referenced: u64, current: u64 },
+    /// A superseded policy: the referenced version exists but a
+    /// newer one governs (graded, never silent — SG-2).
+    Stale {
+        /// The version held.
+        have: u64,
+        /// The current version.
+        current: u64,
+    },
+    /// The referenced version is not in the chain (drift).
+    VersionDrift {
+        /// The version referenced.
+        referenced: u64,
+        /// The current version.
+        current: u64,
+    },
+    /// No such policy in the consulted set.
     UnknownPolicy,
 }
 
 impl PolicyVerdict {
+    /// Whether the verdict is exactly current (stale grades degrade).
     pub fn is_current(&self) -> bool {
         matches!(self, PolicyVerdict::Current)
     }
 
+    /// The verdict's wire label.
     pub fn label(&self) -> &'static str {
         match self {
             PolicyVerdict::Current => "current",

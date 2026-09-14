@@ -88,6 +88,7 @@ pub enum FederationTier {
 }
 
 impl FederationTier {
+    /// The tier's wire token.
     pub fn token(self) -> &'static str {
         match self {
             FederationTier::T1 => "t1-read",
@@ -113,41 +114,71 @@ impl Role {
 }
 
 // A. Issuance roles (1–8).
+/// The manufacturer role (issuance family).
 pub const MANUFACTURER: Role = Role::of("manufacturer");
+/// The importer role (issuance family).
 pub const IMPORTER: Role = Role::of("importer");
+/// The registrar role (issuance family).
 pub const REGISTRAR: Role = Role::of("registrar");
+/// The authorized representative role (issuance family).
 pub const AUTHORIZED_REPRESENTATIVE: Role = Role::of("authorized-representative");
+/// The type test lab role (issuance family).
 pub const TYPE_TEST_LAB: Role = Role::of("type-test-lab");
+/// The calibration body role (issuance family).
 pub const CALIBRATION_BODY: Role = Role::of("calibration-body");
+/// The batch maker role (issuance family).
 pub const BATCH_MAKER: Role = Role::of("batch-maker");
+/// The component maker role (issuance family).
 pub const COMPONENT_MAKER: Role = Role::of("component-maker");
 
 // B. Lifecycle-event roles (9–16).
+/// The distributor role (lifecycle family).
 pub const DISTRIBUTOR: Role = Role::of("distributor");
+/// The retailer role (lifecycle family).
 pub const RETAILER: Role = Role::of("retailer");
+/// The independent repairer role (lifecycle family).
 pub const INDEPENDENT_REPAIRER: Role = Role::of("independent-repairer");
+/// The refurbisher role (lifecycle family).
 pub const REFURBISHER: Role = Role::of("refurbisher");
+/// The recycler role (lifecycle family).
 pub const RECYCLER: Role = Role::of("recycler");
+/// The waste operator role (lifecycle family).
 pub const WASTE_OPERATOR: Role = Role::of("waste-operator");
+/// The logistics operator role (lifecycle family).
 pub const LOGISTICS_OPERATOR: Role = Role::of("logistics-operator");
+/// The auction house role (lifecycle family).
 pub const AUCTION_HOUSE: Role = Role::of("auction-house");
 
 // C. Verification & attestation roles (17–23).
+/// The market surveillance role (verification and attestation family).
 pub const MARKET_SURVEILLANCE: Role = Role::of("market-surveillance");
+/// The customs authority role (verification and attestation family).
 pub const CUSTOMS_AUTHORITY: Role = Role::of("customs-authority");
+/// The conformity body role (verification and attestation family).
 pub const CONFORMITY_BODY: Role = Role::of("conformity-body");
+/// The notified body role (verification and attestation family).
 pub const NOTIFIED_BODY: Role = Role::of("notified-body");
+/// The insurer role (verification and attestation family).
 pub const INSURER: Role = Role::of("insurer");
+/// The appraiser role (verification and attestation family).
 pub const APPRAISER: Role = Role::of("appraiser");
+/// The consumer role (verification and attestation family).
 pub const CONSUMER: Role = Role::of("consumer");
 
 // D. Infrastructure roles (24–30).
+/// The registry operator role (infrastructure family).
 pub const REGISTRY_OPERATOR: Role = Role::of("registry-operator");
+/// The resolver operator role (infrastructure family).
 pub const RESOLVER_OPERATOR: Role = Role::of("resolver-operator");
+/// The log operator role (infrastructure family).
 pub const LOG_OPERATOR: Role = Role::of("log-operator");
+/// The trust authority role (infrastructure family).
 pub const TRUST_AUTHORITY: Role = Role::of("trust-authority");
+/// The archive provider role (infrastructure family).
 pub const ARCHIVE_PROVIDER: Role = Role::of("archive-provider");
+/// The hosting provider role (infrastructure family).
 pub const HOSTING_PROVIDER: Role = Role::of("hosting-provider");
+/// The dispute panelist role (infrastructure family).
 pub const DISPUTE_PANELIST: Role = Role::of("dispute-panelist");
 
 /// The catalog: role → the actions its rule row admits. First-class

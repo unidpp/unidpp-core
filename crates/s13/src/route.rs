@@ -211,6 +211,7 @@ pub struct VerificationRoute {
 }
 
 impl VerificationRoute {
+    /// An empty route; steps append in execution order.
     pub fn new() -> VerificationRoute {
         VerificationRoute::default()
     }

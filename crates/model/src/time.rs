@@ -27,7 +27,13 @@ impl Timestamp {
         Timestamp { secs, nanos: 0 }
     }
 
-    /// Current wall-clock time (test drivers should prefer explicit values).
+    /// Current wall-clock time (test drivers should prefer explicit
+    /// values). On wasm32 the module is caller-clock — there is no
+    /// wall clock inside the isolate, and SystemTime aborts — so the
+    /// epoch answers; callers on the edge always supply the instant
+    /// explicitly and this only keeps default-initialised paths
+    /// trap-free.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn now() -> Timestamp {
         use std::time::{SystemTime, UNIX_EPOCH};
         match SystemTime::now().duration_since(UNIX_EPOCH) {
@@ -43,6 +49,11 @@ impl Timestamp {
                 }
             }
         }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn now() -> Timestamp {
+        Timestamp::UNIX_EPOCH
     }
 
     /// Whole seconds from `earlier` to `self`, if `self >= earlier`.

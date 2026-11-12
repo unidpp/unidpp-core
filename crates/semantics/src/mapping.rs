@@ -265,6 +265,28 @@ pub enum MappingError {
     Transform(String),
 }
 
+impl core::fmt::Display for MappingError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            MappingError::Mismatch { expected, got } => {
+                write!(f, "the hops do not join: the chain ends at `{expected}`, the next hop starts at `{got}`")
+            }
+            MappingError::NoCorrespondence { source, target } => {
+                write!(f, "a tier-3 record refuses the composition: no correspondence is asserted between `{source}` and `{target}`")
+            }
+            MappingError::OverCap { hops, cap } => {
+                write!(f, "the chain length {hops} exceeds the policy cap {cap}")
+            }
+            MappingError::NotDeterministic { source, target } => {
+                write!(f, "a correspondence is not a transform: the hop `{source}` to `{target}` cannot apply deterministically")
+            }
+            MappingError::Transform(reason) => {
+                write!(f, "the transform failed: {reason}")
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

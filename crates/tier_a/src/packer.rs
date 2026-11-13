@@ -350,11 +350,23 @@ mod tests {
             payload.product_id.to_string(),
             decoded["product_id"].as_str().expect("product")
         );
-        assert_eq!(payload.passport_id.as_str(), decoded["passport_id"].as_str().expect("passport"));
+        assert_eq!(
+            payload.passport_id.as_str(),
+            decoded["passport_id"].as_str().expect("passport")
+        );
         assert_eq!(payload.eo_id, decoded["eo_id"].as_str().expect("eo"));
-        assert_eq!(payload.status.to_string(), decoded["status"].as_str().expect("status"));
-        assert_eq!(payload.safety.to_string(), decoded["safety"].as_str().expect("safety"));
-        assert_eq!(payload.as_of.to_string(), decoded["as_of"].as_str().expect("as_of"));
+        assert_eq!(
+            payload.status.to_string(),
+            decoded["status"].as_str().expect("status")
+        );
+        assert_eq!(
+            payload.safety.to_string(),
+            decoded["safety"].as_str().expect("safety")
+        );
+        assert_eq!(
+            payload.as_of.to_string(),
+            decoded["as_of"].as_str().expect("as_of")
+        );
         assert!(payload.log_head.is_none());
         assert_eq!(payload.signatures.len(), 1);
         assert_eq!(

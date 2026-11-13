@@ -328,7 +328,6 @@ mod tests {
     }
 
     #[test]
-    #[test]
     fn the_corpus_fixture_decodes() {
         // The canonical carrier bytes (a real mint of the reference
         // binary) pin the framing: the native decode reads the same
@@ -375,6 +374,7 @@ mod tests {
         );
     }
 
+    #[test]
     fn pack_and_decode_round_trip() {
         let packer = TierAPacker::new(EcLevel::M, 40);
         let payload = sample(vec![

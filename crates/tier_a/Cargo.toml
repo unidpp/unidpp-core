@@ -11,3 +11,6 @@ rust-version.workspace = true
 unidpp-model = { workspace = true }
 unidpp-event = { workspace = true }
 serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = "1"

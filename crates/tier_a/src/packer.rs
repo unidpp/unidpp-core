@@ -328,6 +328,41 @@ mod tests {
     }
 
     #[test]
+    #[test]
+    fn the_corpus_fixture_decodes() {
+        // The canonical carrier bytes (a real mint of the reference
+        // binary) pin the framing: the native decode reads the same
+        // fields the TypeScript decoder asserts against this file.
+        let bytes = std::fs::read(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/fixtures/canonical/pack.json"
+        ))
+        .expect("the pack fixture rides the crate");
+        let fixture: serde_json::Value = serde_json::from_slice(&bytes).expect("fixture json");
+        let hex = fixture["hex"].as_str().expect("hex");
+        let mut raw = Vec::new();
+        for i in (0..hex.len()).step_by(2) {
+            raw.push(u8::from_str_radix(&hex[i..i + 2], 16).expect("hex byte"));
+        }
+        let payload = TierAPacker::decode(&raw).expect("decodes");
+        let decoded = &fixture["decoded"];
+        assert_eq!(
+            payload.product_id.to_string(),
+            decoded["product_id"].as_str().expect("product")
+        );
+        assert_eq!(payload.passport_id.as_str(), decoded["passport_id"].as_str().expect("passport"));
+        assert_eq!(payload.eo_id, decoded["eo_id"].as_str().expect("eo"));
+        assert_eq!(payload.status.to_string(), decoded["status"].as_str().expect("status"));
+        assert_eq!(payload.safety.to_string(), decoded["safety"].as_str().expect("safety"));
+        assert_eq!(payload.as_of.to_string(), decoded["as_of"].as_str().expect("as_of"));
+        assert!(payload.log_head.is_none());
+        assert_eq!(payload.signatures.len(), 1);
+        assert_eq!(
+            payload.signatures[0].key_id,
+            decoded["signatures"][0]["key_id"].as_str().expect("key id")
+        );
+    }
+
     fn pack_and_decode_round_trip() {
         let packer = TierAPacker::new(EcLevel::M, 40);
         let payload = sample(vec![

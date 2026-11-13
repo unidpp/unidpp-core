@@ -244,6 +244,7 @@ name = "unidpp-tier-a"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "serde_json",
  "unidpp-event",
  "unidpp-model",
 ]

@@ -1,0 +1,29 @@
+{
+  "hex": "01150000006c6f63616c3a646f63733a73646b2d64656d6f2d31022900000068747470733a2f2f7265736f6c7665722e6578616d706c652e6f72672f722f73646b2d64656d6f2d31031c00000075726e3a646f63733a70617373706f72743a73646b2d64656d6f2d31041300000075726e3a646f63733a6163746f723a64656d6f050600000069737375656406040000006e6f6e65071b000000323032362d31312d31325431303a30363a34322e3432383636375a0800091b000000323032362d31312d31325431303a30363a34322e3434313936335a0a000b010c01120000006b2d6132393263663031383965373162613140003af9efaddab0b00ab9ba43974cad37f5958b2600322a69a8d41c282bc5dbe1a8cfbb4cab1045f3718d3d91c299f5886b3cd0831c900c7dead59fe630abff9064",
+  "anchor": {
+    "key_id": "k-a292cf0189e71ba1",
+    "public": "04d90cd961d7afccc4b4b65f9a940490d65f7949f722fc42d92abd0fa90e69fa9fdebe0732219e1c09b024473fbbe3aad60e39be95fdaf2a77797a57dbcd464c9a",
+    "suite": "ecdsa-p256"
+  },
+  "decoded": {
+    "product_id": "local:docs:sdk-demo-1",
+    "resolver_uri": "https://resolver.example.org/r/sdk-demo-1",
+    "passport_id": "urn:docs:passport:sdk-demo-1",
+    "eo_id": "urn:docs:actor:demo",
+    "status": "issued",
+    "safety": "none",
+    "validity": {
+      "from": "2026-11-12T10:06:42.428667Z",
+      "to": null
+    },
+    "as_of": "2026-11-12T10:06:42.441963Z",
+    "log_head": null,
+    "signatures": [
+      {
+        "suite": "ecdsa-p256",
+        "key_id": "k-a292cf0189e71ba1",
+        "signature_hex": "3af9efaddab0b00ab9ba43974cad37f5958b2600322a69a8d41c282bc5dbe1a8cfbb4cab1045f3718d3d91c299f5886b3cd0831c900c7dead59fe630abff9064"
+      }
+    ]
+  }
+}

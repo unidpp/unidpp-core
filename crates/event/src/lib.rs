@@ -16,6 +16,7 @@
 
 pub mod commitment;
 pub mod event_type;
+pub mod intake;
 pub mod log;
 pub mod payload;
 pub mod status;
